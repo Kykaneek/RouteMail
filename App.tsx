@@ -1,10 +1,13 @@
+
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+//walidacja-komentarz testowy
   const handleLogin = () => {
     if (username === 'Admin' && password === 'Admin') {
       Alert.alert('Success', 'Logged in successfully');
