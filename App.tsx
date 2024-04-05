@@ -7,7 +7,7 @@ const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-//walidacja-komentarz testowy
+//walidacja-komentarz testowy DP
   const handleLogin = () => {
     if (username === 'Admin' && password === 'Admin') {
       Alert.alert('Success', 'Logged in successfully');
