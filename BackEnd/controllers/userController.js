@@ -1,7 +1,6 @@
-// controllers/userController.js
-
 import db from './db/index.js';
 
+//Kontrole orczytu użytkownika
 export const getUsers = (req, res) => {
     const q = "SELECT * FROM `user`";
     db.query(q, (err, data) => {
@@ -10,6 +9,8 @@ export const getUsers = (req, res) => {
     });
 };
 
+
+//Kontroler stworzenia użytkownika 
 export const createUser = (req, res) => {
     const q = "INSERT INTO user (`Name`, `SurName`, `CourierNumber`, `Role`, `Email`) VALUES (?)"
     const values = [
@@ -25,6 +26,8 @@ export const createUser = (req, res) => {
     });
 };
 
+
+//Kontroler Modyfikacji użytkownika
 export const updateUser = (req, res) => {
     const userId = req.params.id;
     const { Name, SurName, CourierNumber, Role, Email } = req.body;
@@ -36,6 +39,8 @@ export const updateUser = (req, res) => {
     });
 };
 
+
+//Kontroler usuwania użytkownika
 export const deleteUser = (req, res) => {
     const userId = req.params.id;
     const q = "DELETE FROM user WHERE id = ?";
