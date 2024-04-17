@@ -10,7 +10,9 @@ app.get('/', (req, res) => {
     res.send("Witaj w naszej aplikacji! API jest dostępne na /users");
 });
 
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json())
+
+app.use(express.urlencoded({ extended: true }))
 
 
 //Główny endpoint od manipulacji danymi użytkowników
