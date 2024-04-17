@@ -1,6 +1,7 @@
-import db from './db/index.js';
+import db from '../db/db.js';
 
-//Kontrole orczytu użytkownika
+
+//Kontrole odczytu użytkownika
 export const getUsers = (req, res) => {
     const q = "SELECT * FROM `user`";
     db.query(q, (err, data) => {
