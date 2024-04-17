@@ -1,30 +1,44 @@
-import express from "express";
-import userRoutes from '../routes/userRoutes.js';
+/** index.js jest plikiem komulującym obsługę głównych endpointów i zasobów w 
+ aplikacji BackEnd **/
+
+import express from "express"; //Import biblioteki exprress do obsługi aplikacji Backend
+import userRoutes from '../routes/userRoutes.js'; // Import Endpointów do 
 import vechicleRoutes from '../routes/vechicleRoutes.js';
-import bodyParser from 'body-parser';
 
+const app = express(); // Stworzenie instancji aplikacji express.js
 
-const app = express();
-
-app.get('/', (req, res) => {
-    res.send("Witaj w naszej aplikacji! API jest dostępne na /users");
+app.get('/', (req, res) => { //Strona główna aplikacji BackEnd -> podstawowy endpoint
+    res.send("To jest główna strona https//localhost:8800");
 });
 
-app.use(express.json())
+// Middelware - przetwarza automatycznie zapytania do formatu JSON po protokle HTTP
+app.use(express.json()) 
 
-app.use(express.urlencoded({ extended: true }))
+// Middelware - przetwarza, parsuje formularz i udostępnia dane w obiekcie "req.body"
+app.use(express.urlencoded({ extended: true })) 
 
 
-//Główny endpoint od manipulacji danymi użytkowników
+
+// Główny endpoint od manipulacji danymi użytkowników
+//                                  -> Przygotował Krystian Gomółka
 app.use('/users', userRoutes);
 
-//Główny endpoint od manipulacji danymi pojazdów
+// Główny endpoint od manipulacji danymi pojazdów 
+//                                  -> Przygotował Krystian Gomółka
 app.use('/vechicles', vechicleRoutes);
+
+// Tutaj jest miejsce na endpoint od maniupulacji 
+//  miejscowościami i adresami 
+//                                  -> Przygotowuje Daniel Plata
+
+
+// Tutaj jest miejsce na endpoint od manipulacji zleceniami 
+//                                  -> Przygotowuje Marcin Kociołek 
 
 //Obsługa błędów
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Coś poszło nie tak!');
+    res.status(500).send('Wystąpił błąd podczas przesyłu danych!');
 });
 
 //Głowny port nasłuchujący na backendzie

@@ -33,3 +33,29 @@ export const createVehicle = (req, res) => {
         return res.json(data);
     });
 };
+
+// Kontroler modyfikacji pojazdu 
+export const updateVehicle = (req, res) => {
+    const UserId = req.params.id;
+    const q = "UPDATE vechicle set `Name` = ? , `Model` =? , `InUse` =? WHERE id = ? ";
+    const values = [
+        req.body.Name,
+        req.body.Model,
+        req.body.InUse,
+        UserId
+    ];
+    db.query(q, values, (err, data) => {
+        if (err) return res.json(err);
+        return res.json(data);
+    });
+};
+
+//Kontroler usunięcia konkretnego pojazdu 
+export const deleteVehicle = (req, res) => {
+    const vehicleId = req.params.id;
+    const query = "DELETE FROM vechicle WHERE id = ?";
+    db.query(query, [vehicleId], (err, results) => {
+        if(err) return res.status(500).json(err);
+        return res.json(data);
+    });
+};

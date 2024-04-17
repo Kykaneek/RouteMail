@@ -3,10 +3,11 @@ import { getUsers, createUser, updateUser, deleteUser } from '../controllers/use
 
 const router = express.Router();
 
-// http://localhost:8800/
-router.get("/", getUsers);
-router.post("/", createUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+// http://localhost:8800/ -> Główny link na którym działają endpointy
+
+router.get("/", getUsers);           //endpoint odczytu użytkownika
+router.post("/", createUser);        //endpoint dodania użytkownika
+router.put("/:id", updateUser);      //endpoint modyfikacji użytkownika
+router.delete("/:id", deleteUser);   //endpoint usunięcia użytkownika
 
 export default router;
