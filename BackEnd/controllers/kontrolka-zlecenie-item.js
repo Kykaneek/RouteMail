@@ -1,0 +1,54 @@
+const mysql = require('mysql');
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'test'
+});
+
+exports.getAllOrderItems = (req, res) => {
+  connection.query('SELECT * FROM OrderItem', (error, results, fields) => {
+    if (error) throw error;
+    res.json(results);
+  });
+};
+
+exports.getOrderItemById = (req, res) => {
+  const orderItemId = req.params.id;
+  connection.query('SELECT * FROM OrderItem WHERE id = ?', [orderItemId], (error, results, fields) => {
+    if (error) throw error;
+    if (results.length === 0) {
+      res.status(404).json({ message: 'Pozycja zlecenia nie znaleziona' });
+    } else {
+      res.json(results[0]);
+    }
+  });
+};
+
+exports.createOrderItem = (req, res) => {
+  const { OrderId, PositionOnRoute, AdressesId, RouteToPoint, IsRealizated, TypeOfDevilery } = req.body;
+  const orderItem = { OrderId, PositionOnRoute, AdressesId, RouteToPoint, IsRealizated, TypeOfDevilery };
+  connection.query('INSERT INTO OrderItem SET ?', orderItem, (error, results, fields) => {
+    if (error) throw error;
+    res.status(201).json({ message: 'Pozycja zlecenia dodana', orderItemId: results.insertId });
+  });
+};
+
+exports.updateOrderItem = (req, res) => {
+  const orderItemId = req.params.id;
+  const { OrderId, PositionOnRoute, AdressesId, RouteToPoint, IsRealizated, TypeOfDevilery } = req.body;
+  const updatedOrderItem = { OrderId, PositionOnRoute, AdressesId, RouteToPoint, IsRealizated, TypeOfDevilery };
+  connection.query('UPDATE OrderItem SET ? WHERE id = ?', [updatedOrderItem, orderItemId], (error, results, fields) => {
+    if (error) throw error;
+    res.json({ message: 'Pozycja zlecenia zaktualizowana', orderItemId: orderItemId });
+  });
+};
+
+exports.deleteOrderItem = (req, res) => {
+  const orderItemId = req.params.id;
+  connection.query('DELETE FROM OrderItem WHERE id = ?', [orderItemId], (error, results, fields) => {
+    if (error) throw error;
+    res.json({ message: 'Pozycja zlecenia usunięta', orderItemId: orderItemId });
+  });
+};
