@@ -6,7 +6,7 @@ import mysql from "mysql";
 const db = mysql.createConnection({
     host:"localhost",
     user:"root",
-    password:"Krystian123!",
+    password:"",
     database:"routemail"
 })
 
