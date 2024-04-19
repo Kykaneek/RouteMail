@@ -1,11 +1,8 @@
-/** index.js jest plikiem komulującym obsługę głównych endpointów i zasobów w 
- aplikacji BackEnd **/
-
 import express from "express"; //Import biblioteki exprress do obsługi aplikacji Backend
 import userRoutes from '../routes/userRoutes.js'; // Import Endpointów do 
 import vechicleRoutes from '../routes/vechicleRoutes.js';
+import adressesandvillage from '../routes/adressesandvillagesCRoutes.js';
 import router from '../routes/ordersRoutes.js';
-
 const app = express(); // Stworzenie instancji aplikacji express.js
 
 app.get('/', (req, res) => { //Strona główna aplikacji BackEnd -> podstawowy endpoint
@@ -31,11 +28,11 @@ app.use('/vechicles', vechicleRoutes);
 // Tutaj jest miejsce na endpoint od maniupulacji 
 //  miejscowościami i adresami 
 //                                  -> Przygotowuje Daniel Plata
+app.use('/adresses', adressesandvillage);
 
 
 // Tutaj jest miejsce na endpoint od manipulacji zleceniami 
 //                                  -> Przygotowuje Marcin Kociołek 
-
 app.use('/api', router); // dodaje router pod ścieżką /api
 
 //Obsługa błędów
