@@ -6,8 +6,6 @@
 
 import express from 'express';
 const router = express.Router();
-//const ordersController = require('../controllers/ordersController.js');
-//const orderItemController = require('../controllers/ordersController.js');
 import { getAllOrders, getOrderById, createOrder, updateOrder, deleteOrder, getAllOrderItems, getOrderItemById, createOrderItem, updateOrderItem, deleteOrderItem } from '../controllers/ordersController.js';
 
 router.get('/orders', getAllOrders); // Wydobycie wszystkich zleceń
