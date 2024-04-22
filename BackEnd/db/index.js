@@ -1,9 +1,10 @@
 import express from "express"; //Import biblioteki exprress do obsługi aplikacji Backend
 import userRoutes from '../routes/userRoutes.js'; // Import Endpointów do 
 import vechicleRoutes from '../routes/vechicleRoutes.js';
-import adressesandvillage from '../routes/adressesRoutes.js';
+import adressesRoutes from '../routes/adressesRoutes.js';
 import OrderRoutes from '../routes/ordersRoutes.js';
 import OrderItemRoutes from '../routes/orderItemRoutes.js';
+import villagesRoutes from '../routes/villagesRoutes.js';
 const app = express(); // Stworzenie instancji aplikacji express.js
 
 app.get('/', (req, res) => { //Strona główna aplikacji BackEnd -> podstawowy endpoint
@@ -29,7 +30,8 @@ app.use('/vechicles', vechicleRoutes);
 // Tutaj jest miejsce na endpoint od maniupulacji 
 //  miejscowościami i adresami 
 //                                  -> Przygotowuje Daniel Plata
-app.use('/adresses', adressesandvillage);
+app.use('/adresses', adressesRoutes);
+app.use('/villages', villagesRoutes);
 
 
 // Tutaj jest miejsce na endpoint od manipulacji zleceniami 

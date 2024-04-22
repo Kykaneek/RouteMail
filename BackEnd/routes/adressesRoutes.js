@@ -1,6 +1,6 @@
 // Przestrzeń robocza dla Daniel Plata
 import express from 'express';
-import { getAdresses, createAdresses, updateAdresses, deleteAdresses } from '../controllers/adressesandvillagesControler.js';
+import { getAdresses, createAdresses, updateAdresses, deleteAdresses } from '../controllers/adressesControler.js';
 
 
 //Endpointy Kontrolerów Adresów i miejscowości(Głównie miejscowości)
