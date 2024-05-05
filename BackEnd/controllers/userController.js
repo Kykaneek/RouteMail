@@ -12,6 +12,18 @@ export const getUsers = (req, res) => {
     });
 };
 
+// Kontroler odczytu użytkownika po ID | METODA GET
+export const getUserById = (req, res) => {
+    const userId = req.params.id; // Pobranie ID użytkownika z parametrów żądania
+    const q = "SELECT * FROM `user` WHERE id = ?"; // Zapytanie SQL pobierające użytkownika po ID
+    db.query(q, userId, (err, data) => { // Wykonanie zapytania z przekazanym ID
+        if (err) return res.status(500).json({ error: 'Błąd w pobieraniu użytkownika' }); // Obsługa błędu zapytania
+        if (data.length === 0) return res.status(404).json({ message: 'Użytkownik o podanym ID nie został znaleziony' }); // Obsługa braku użytkownika o podanym ID
+        return res.status(200).json(data[0]); // Zwrócenie danych znalezionego użytkownika
+    });
+};
+
+
 
 //Kontroler stworzenia użytkownika | METODA POST
 export const createUser = (req, res) => { //Wprowadż usera do bazy

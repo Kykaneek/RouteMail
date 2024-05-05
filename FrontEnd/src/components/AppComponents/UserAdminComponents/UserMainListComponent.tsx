@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -6,28 +6,41 @@ import {
   Text,
   TouchableOpacity,
   TextInput,
+  Image,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
-  const [form, setForm] = useState({
-    email: '',
-    password: '',
-  });
+  const [users, setUsers] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = () => {
+    // Pobranie danych użytkowników z backendu
+    fetch('http://192.168.1.130:8800/users')
+      .then(response => response.json())
+      .then(data => {
+        setUsers(data);
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
+      });
+  };
 
   const GoBack = () => {
     navigation.navigate('UserViewScreen');
-  }
+  };
 
   const AddNewUser = () => {
-    // dodanie logiki odpowiedzialnej za wysyłanie danych do serwera
     navigation.navigate('UserAddScreen');
   };
-
-  const ViewProperties = () => {
-    // dodanie logiki nawigacyjnej związanej z ekranem rejestracji
-    navigation.navigate('UserPropertiesScreen');
+  
+  const ViewProperties = (userData: any) => {
+    navigation.navigate('UserPropertiesScreen', { userData });
   };
+  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
@@ -42,19 +55,29 @@ export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Scroll-view with Buttons */}
         <KeyboardAwareScrollView contentContainerStyle={styles.scrollContainer}>
-          <TouchableOpacity style={styles.scrollButton}>
-            <Text style={styles.scrollButtonText}>Informacje skrótowe użytkownika</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.scrollButton} onPress={ViewProperties}>
-            <Text style={styles.scrollButtonText}>Zobacz szczegóły</Text>
-          </TouchableOpacity>
+          {/* List of users */}
+          {users.map((user, index) => (
+            <View key={index} style={styles.userBox}>
+              <View style={styles.userBoxPart}>
+                <Text>{user.Name}</Text>
+                <Text>{user.SurName}</Text>
+                <Text>{user.CourierNumber}</Text>
+              </View>
+              <View style={styles.userBoxPart}>
+                <TouchableOpacity
+                  style={styles.scrollButton}
+                  onPress={() => ViewProperties(user)}>
+                  <Text style={styles.scrollButtonText}>Zobacz szczegóły</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
         </KeyboardAwareScrollView>
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -81,6 +104,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 20,
+    backgroundColor: 'lightblue',
+    alignItems: 'center', // Wyrównanie zawartości w poziomie do środka
   },
   scrollButton: {
     backgroundColor: '#075eec',
@@ -88,10 +113,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 10,
+    width: 100,
   },
   scrollButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  userBox: {
+    flexDirection: 'row',
+    borderWidth: 2,
+    borderColor: 'black',
+    borderRadius: 10,
+    minHeight: 150,
+    width: 325,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  userBoxPart: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 162.5,
+  },
 });
+
+export default UserMainListComponent;

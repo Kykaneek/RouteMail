@@ -21,6 +21,23 @@ export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => 
     rola: '',
   });
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userData = navigation.getParam('userData');
+        // Możesz również uzyskać dostęp do id użytkownika używając userData.id
+        const response = await fetch(`http://192.168.1.130:8800/users/${userData.id}`);
+        const userDataFromServer = await response.json();
+        setUserData(userDataFromServer);
+      } catch (error) {
+        console.error('Błąd w pobieraniu danych użytkownika:', error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+
   const EditUser = () => {
     navigation.navigate('UserEditScreen')
   }
@@ -28,23 +45,6 @@ export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => 
   const BackToPage = () => {
     navigation.navigate('UserMainListScreen')
   }
-
-  useEffect(() => {
-    // symulowanie pobrania danych z bazy
-    const fetchData = async () => {
-      try {
-        // miejsce na przyładowe API albo zapytanie do bazy danych
-        const response = await fetch('https://example.com/userData');
-        const data = await response.json();
-        // zakładając ze dane odpowiedzi mają strukturę { imię: '', nazwisko: '', ... }
-        setUserData(data);
-      } catch (error) {
-        console.error('Bład w pobieraniu danych użytkownika:', error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
@@ -186,3 +186,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default UserPropertiesComponent;
