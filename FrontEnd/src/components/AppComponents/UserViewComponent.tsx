@@ -10,6 +10,10 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
     navigation.navigate('VehicleViewScreen')
   }
 
+  const GoToUserSettings = () => {
+    navigation.navigate('UserMainListScreen')
+  }
+
   return (
     <View style={styles.outerContainer}>
       <View style={styles.userDataContainer}>
@@ -46,8 +50,8 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonsInnerContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.buttonText}>Ustawienia lokalizacji</Text>
+          <TouchableOpacity style={styles.button} onPress={GoToUserSettings}>
+            <Text style={styles.buttonText}>Administrowanie użytkownikami</Text>
           </TouchableOpacity>
         </View>
       </View>

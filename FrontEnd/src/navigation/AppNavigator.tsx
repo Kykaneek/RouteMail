@@ -15,6 +15,12 @@ import VillagePropiertieVillageScreen from '../screens/AppScreens/VillageScreens
 import VillageEditVillageScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
 import VillageEditAdresScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
 
+import ChangePasswordScreen from '../screens/AppScreens/UserAdminScreens/ChangePasswordScreen';
+import UserEditScreen from '../screens/AppScreens/UserAdminScreens/UserEditScreen';
+import UserMainListScreen from '../screens/AppScreens/UserAdminScreens/UserMainListScreen';
+import UserPropertiesScreen from '../screens/AppScreens/UserAdminScreens/UserPropertiesScreen';
+import UserAddScreen from '../screens/AppScreens/UserAdminScreens/UserAddScreen';
+
 const Stack = createStackNavigator();
 
 
@@ -35,6 +41,11 @@ const AppNavigation = () => {
       <Stack.Screen options={{ headerShown: false,}} name="VillagePropiertieVillageScreen" component={VillagePropiertieVillageScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="VillageEditVillageScreen" component={VillageEditVillageScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="VillageEditAdresScreen" component={VillageEditAdresScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="ChangePasswordScreen" component={ChangePasswordScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="UserEditScreen" component={UserEditScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="UserMainListScreen" component={UserMainListScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="UserPropertiesScreen" component={UserPropertiesScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="UserAddScreen" component={UserAddScreen} />
     </Stack.Navigator>
   );
 };

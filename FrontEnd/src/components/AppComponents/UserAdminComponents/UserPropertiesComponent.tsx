@@ -21,6 +21,14 @@ export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => 
     rola: '',
   });
 
+  const EditUser = () => {
+    navigation.navigate('UserEditScreen')
+  }
+
+  const BackToPage = () => {
+    navigation.navigate('UserMainListScreen')
+  }
+
   useEffect(() => {
     // symulowanie pobrania danych z bazy
     const fetchData = async () => {
@@ -111,10 +119,10 @@ export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => 
           <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Usuń użytkownika')}>
             <Text style={styles.bottomButtonText}>Usuń użytkownika</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Modyfikuj użytkownika')}>
+          <TouchableOpacity style={styles.bottomButton} onPress={EditUser}>
             <Text style={styles.bottomButtonText}>Modyfikuj użytkownika</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Powrót do strony')}>
+          <TouchableOpacity style={styles.bottomButton} onPress={BackToPage}>
             <Text style={styles.bottomButtonText}>Powrót do strony</Text>
           </TouchableOpacity>
         </View>

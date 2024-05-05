@@ -15,14 +15,18 @@ export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
     password: '',
   });
 
-  const handleSignIn = () => {
+  const GoBack = () => {
+    navigation.navigate('UserViewScreen');
+  }
+
+  const AddNewUser = () => {
     // dodanie logiki odpowiedzialnej za wysyłanie danych do serwera
-    console.log('Sign in', form);
+    navigation.navigate('UserAddScreen');
   };
 
-  const handleSignUp = () => {
+  const ViewProperties = () => {
     // dodanie logiki nawigacyjnej związanej z ekranem rejestracji
-    console.log('Sign up');
+    navigation.navigate('UserPropertiesScreen');
   };
 
   return (
@@ -30,20 +34,20 @@ export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         {/* Top Buttons */}
         <View style={styles.topButtons}>
-          <TouchableOpacity style={styles.topButton}>
+          <TouchableOpacity style={styles.topButton} onPress={GoBack}>
             <Text style={styles.topButtonText}>Powrót</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.topButton}>
+          <TouchableOpacity style={styles.topButton} onPress={AddNewUser}>
             <Text style={styles.topButtonText}>Dodaj użytkownika</Text>
           </TouchableOpacity>
         </View>
 
         {/* Scroll-view with Buttons */}
         <KeyboardAwareScrollView contentContainerStyle={styles.scrollContainer}>
-          <TouchableOpacity style={styles.scrollButton} onPress={handleSignIn}>
+          <TouchableOpacity style={styles.scrollButton}>
             <Text style={styles.scrollButtonText}>Informacje skrótowe użytkownika</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.scrollButton} onPress={handleSignUp}>
+          <TouchableOpacity style={styles.scrollButton} onPress={ViewProperties}>
             <Text style={styles.scrollButtonText}>Zobacz szczegóły</Text>
           </TouchableOpacity>
         </KeyboardAwareScrollView>
