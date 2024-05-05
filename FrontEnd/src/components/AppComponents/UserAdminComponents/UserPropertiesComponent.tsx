@@ -1,85 +1,82 @@
 import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Image,
-} from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => {
-  const [userData, setUserData] = useState({
-    imię: '',
-    nazwisko: '',
-    numerkuriera: '',
-    pojazd: '',
-    aktualneZlecenie: '',
-    email: '',
-    rola: '',
-  });
+const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route: any }) => {
+  const [userData, setUserData] = useState<any>({});
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const userData = navigation.getParam('userData');
-        // Możesz również uzyskać dostęp do id użytkownika używając userData.id
-        const response = await fetch(`http://192.168.1.130:8800/users/${userData.id}`);
-        const userDataFromServer = await response.json();
-        setUserData(userDataFromServer);
-      } catch (error) {
-        console.error('Błąd w pobieraniu danych użytkownika:', error);
-      }
-    };
-  
-    fetchData();
+    // Pobieranie danych użytkownika z parametrów nawigacji
+    const { userData } = route.params;
+    setUserData(userData);
   }, []);
-  
 
   const EditUser = () => {
-    navigation.navigate('UserEditScreen')
-  }
+    navigation.navigate('UserEditScreen');
+  };
 
   const BackToPage = () => {
-    navigation.navigate('UserMainListScreen')
-  }
+    navigation.navigate('UserMainListScreen');
+  };
+
+  const RemoveUser = () => {
+    Alert.alert(
+      'Potwierdź',
+      'Czy na pewno chcesz usunąć tego użytkownika?',
+      [
+        {
+          text: 'Tak',
+          onPress: () => {
+            // Tutaj możesz dodać logikę usuwania użytkownika
+            Alert.alert('Użytkownik został usunięty!');
+            navigation.navigate('UserMainListScreen');
+          },
+        },
+        {
+          text: 'Nie',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
       <View style={styles.container}>
-        {/* Top Photo Frame and Text Fields */}
+        {/* Górny kontener z danymi użytkownika */}
         <View style={styles.topContainer}>
+          {/* Ramka z obrazkiem */}
           <View style={styles.photoFrame}>
             <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.photo} />
           </View>
+          {/* Pola tekstowe */}
           <View style={styles.textFields}>
             <Text style={styles.label}>Imię:</Text>
             <TextInput
               style={styles.value}
               placeholder="Imię"
-              value={userData.imię}
+              value={userData.Name}
               editable={false}
             />
             <Text style={styles.label}>Nazwisko:</Text>
             <TextInput
               style={styles.value}
               placeholder="Nazwisko"
-              value={userData.nazwisko}
+              value={userData.SurName}
               editable={false}
             />
             <Text style={styles.label}>Numer Kuriera:</Text>
             <TextInput
               style={styles.value}
               placeholder="Numer kuriera"
-              value={userData.numerkuriera}
+              value={userData.CourierNumber}
               editable={false}
             />
           </View>
         </View>
 
-        {/* Middle Text Fields */}
+        {/* Środkowy kontener z dodatkowymi danymi użytkownika */}
         <View style={styles.middleContainer}>
           <Text style={styles.label}>Pojazd:</Text>
           <TextInput
@@ -99,24 +96,24 @@ export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => 
           <TextInput
             style={styles.value}
             placeholder="Email"
-            value={userData.email}
+            value={userData.Email}
             editable={false}
           />
           <Text style={styles.label}>Rola:</Text>
           <TextInput
             style={styles.value}
             placeholder="Rola"
-            value={userData.rola}
+            value={userData.Role}
             editable={false}
           />
         </View>
 
-        {/* Bottom Buttons */}
+        {/* Dolny kontener z przyciskami */}
         <View style={styles.bottomContainer}>
           <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Zmień hasło')}>
             <Text style={styles.bottomButtonText}>Zmień hasło</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Usuń użytkownika')}>
+          <TouchableOpacity style={styles.bottomButton} onPress={RemoveUser}>
             <Text style={styles.bottomButtonText}>Usuń użytkownika</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bottomButton} onPress={EditUser}>
@@ -129,7 +126,7 @@ export const UserPropertiesComponent = ({ navigation }: { navigation: any }) => 
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
