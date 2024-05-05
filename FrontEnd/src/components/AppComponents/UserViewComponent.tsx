@@ -6,6 +6,9 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
     navigation.navigate('MainOrderScreen')
   }
 
+  const GoTovehicles = () => {
+    navigation.navigate('VehicleViewScreen')
+  }
 
   return (
     <View style={styles.outerContainer}>
@@ -38,7 +41,7 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.buttonsInnerContainer}>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity style={styles.button} onPress={GoTovehicles}>
             <Text style={styles.buttonText}>Pojazd</Text>
           </TouchableOpacity>
         </View>

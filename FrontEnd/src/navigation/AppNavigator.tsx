@@ -6,6 +6,9 @@ import MainOrderItemScreen from '../screens/AppScreens/OrderScreens/OrderItemScr
 import OrderItemScreen from '../screens/AppScreens/OrderScreens/OrderItemScreen/OrderItemViewScreen';
 import OrderMapScreen from '../screens/AppScreens/OrderScreens/OrderMapViewScreen';
 import CreateOrderScreen from '../screens/AppScreens/OrderScreens/CreateOrderScreen';
+import VehicleViewScreen from '../screens/AppScreens/VehicleScreens/VehicleMainScreen';
+import VehiclePropiertisViewScreen from '../screens/AppScreens/VehicleScreens/VehiclePropiertieScreen';
+import VehicleEditViewScreen from '../screens/AppScreens/VehicleScreens/VehicleEditScreen';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +22,9 @@ const AppNavigation = () => {
       <Stack.Screen options={{ headerShown: false,}} name="OrderItemScreen" component={OrderItemScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="OrderMapScreen" component={OrderMapScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="CreateOrderScreen" component={CreateOrderScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VehicleViewScreen" component={VehicleViewScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VehiclePropiertisViewScreen" component={VehiclePropiertisViewScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VehicleEditViewScreen" component={VehicleEditViewScreen} />
     </Stack.Navigator>
   );
 };
