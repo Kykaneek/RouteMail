@@ -3,7 +3,7 @@ import { VehiclePropiertis } from '../../../components/VehiclesComponents/Vehicl
 import { StackNavigationProp } from '@react-navigation/stack';
 
 
-type VehiclePropiertisScreenProp = StackNavigationProp<{ Vehicle: undefined }>;
+type VehiclePropiertisScreenProp = StackNavigationProp<{ VehicleP: undefined }>;
 
 const VehiclePropiertisViewScreen = ({ navigation }: { navigation: VehiclePropiertisScreenProp  }) => {
   return < VehiclePropiertis  navigation={navigation} />;

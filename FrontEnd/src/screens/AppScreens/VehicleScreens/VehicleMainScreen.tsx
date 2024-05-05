@@ -3,7 +3,7 @@ import { VehicleView } from '../../../components/VehiclesComponents/VehicleMainC
 import { StackNavigationProp } from '@react-navigation/stack';
 
 
-type VehicleMainScreenProp = StackNavigationProp<{ Vehicle: undefined }>;
+type VehicleMainScreenProp = StackNavigationProp<{ VehicleM: undefined }>;
 
 const VehicleViewScreen = ({ navigation }: { navigation: VehicleMainScreenProp  }) => {
   return < VehicleView  navigation={navigation} />;

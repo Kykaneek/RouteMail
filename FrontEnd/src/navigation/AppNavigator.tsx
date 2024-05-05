@@ -9,6 +9,11 @@ import CreateOrderScreen from '../screens/AppScreens/OrderScreens/CreateOrderScr
 import VehicleViewScreen from '../screens/AppScreens/VehicleScreens/VehicleMainScreen';
 import VehiclePropiertisViewScreen from '../screens/AppScreens/VehicleScreens/VehiclePropiertieScreen';
 import VehicleEditViewScreen from '../screens/AppScreens/VehicleScreens/VehicleEditScreen';
+import VillageMainScreen from '../screens/AppScreens/VillageScreens/VillageMainScreen';
+import VillagePropiertieAdresScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieAdresScreen';
+import VillagePropiertieVillageScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
+import VillageEditVillageScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
+import VillageEditAdresScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
 
 const Stack = createStackNavigator();
 
@@ -25,6 +30,11 @@ const AppNavigation = () => {
       <Stack.Screen options={{ headerShown: false,}} name="VehicleViewScreen" component={VehicleViewScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="VehiclePropiertisViewScreen" component={VehiclePropiertisViewScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="VehicleEditViewScreen" component={VehicleEditViewScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillageMainScreen" component={VillageMainScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillagePropiertieAdresScreen" component={VillagePropiertieAdresScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillagePropiertieVillageScreen" component={VillagePropiertieVillageScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillageEditVillageScreen" component={VillageEditVillageScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillageEditAdresScreen" component={VillageEditAdresScreen} />
     </Stack.Navigator>
   );
 };
