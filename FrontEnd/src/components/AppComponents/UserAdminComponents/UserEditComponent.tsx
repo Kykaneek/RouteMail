@@ -13,6 +13,7 @@ import {
 
 export const UserEditComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
+  const [refresh, setRefresh] = useState<boolean>(false);
 
   useEffect(() => {
     if (route && route.params) {
@@ -22,7 +23,7 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
   }, [route]);
 
   const updateUser = () => {
-    fetch(`http://192.168.1.130/users/${userData.id}`, {
+    fetch(`http://192.168.1.130:8800/users/${userData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -34,6 +35,7 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
         Alert.alert('Dane użytkownika zostały zaktualizowane!');
         console.log('Test pomyślnie zdany');
         navigation.navigate('UserPropertiesScreen');
+        setRefresh(!refresh); // Odśwież komponent
       } else {
         throw new Error('Błąd podczas aktualizacji danych użytkownika');
       }
@@ -69,22 +71,22 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
             <TextInput
               style={styles.value}
               placeholder="Imię"
-              value={userData.name}
-              onChangeText={(text) => handleInputChange('name', text)}
+              value={userData.Name}
+              onChangeText={(text) => handleInputChange('Name', text)}
             />
             <Text style={styles.label}>Nazwisko:</Text>
             <TextInput
               style={styles.value}
               placeholder="Nazwisko"
-              value={userData.nazwisko}
-              onChangeText={(text) => handleInputChange('nazwisko', text)}
+              value={userData.SurName}
+              onChangeText={(text) => handleInputChange('SurName', text)}
             />
             <Text style={styles.label}>Numer Kuriera:</Text>
             <TextInput
               style={styles.value}
               placeholder="Numer kuriera"
-              value={userData.numerkuriera}
-              onChangeText={(text) => handleInputChange('numerkuriera', text)}
+              value={userData.CourierNumber}
+              onChangeText={(text) => handleInputChange('CourierNumber', text)}
             />
           </View>
         </View>
@@ -95,15 +97,15 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
           <TextInput
             style={styles.value}
             placeholder="Email"
-            value={userData.email}
-            onChangeText={(text) => handleInputChange('email', text)}
+            value={userData.Email}
+            onChangeText={(text) => handleInputChange('Email', text)}
           />
           <Text style={styles.label}>Rola:</Text>
           <TextInput
             style={styles.value}
             placeholder="Rola"
-            value={userData.rola}
-            onChangeText={(text) => handleInputChange('rola', text)}
+            value={userData.Role}
+            onChangeText={(text) => handleInputChange('Role', text)}
           />
         </View>
 

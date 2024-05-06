@@ -51,7 +51,7 @@ export const updateUser = (req, res) => {
     const values = [Name, SurName, CourierNumber, Role, Email, userId];
     db.query(q, values, (err, result) => { // Wykonaj zapytanie
         if (err) return res.status(500).json(err); // Zwróć komunikat o błędzie 
-        return res.json(data); // Zwróć dane
+        return res.json(result); // Zwróć wynik zapytania
     });
 };
 
