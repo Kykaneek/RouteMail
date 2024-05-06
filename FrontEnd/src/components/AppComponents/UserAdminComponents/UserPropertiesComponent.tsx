@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
@@ -12,12 +12,13 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
   }, []);
 
   const EditUser = () => {
-    navigation.navigate('UserEditScreen');
+    navigation.navigate('UserEditScreen', { userData: userData });
   };
 
   const BackToPage = () => {
     navigation.navigate('UserMainListScreen');
   };
+
 
   const RemoveUser = () => {
     Alert.alert(
@@ -27,9 +28,21 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
         {
           text: 'Tak',
           onPress: () => {
-            // Tutaj możesz dodać logikę usuwania użytkownika
-            Alert.alert('Użytkownik został usunięty!');
-            navigation.navigate('UserMainListScreen');
+            fetch(`http://192.168.1.130:8800/users/${userData.id}`, {
+              method: 'DELETE'
+            })
+            .then(response => {
+              if (response.ok) {
+                Alert.alert('Użytkownik został usunięty!');
+                navigation.navigate('UserMainListScreen');
+              } else {
+                throw new Error('Błąd podczas usuwania użytkownika');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Alert.alert('Wystąpił błąd podczas usuwania użytkownika');
+            });
           },
         },
         {
@@ -40,6 +53,7 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
       { cancelable: false }
     );
   };
+  
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>

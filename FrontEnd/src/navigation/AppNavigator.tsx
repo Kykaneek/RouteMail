@@ -44,7 +44,7 @@ const AppNavigation = () => {
       <Stack.Screen options={{ headerShown: false,}} name="ChangePasswordScreen" component={ChangePasswordScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="UserEditScreen" component={UserEditScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="UserMainListScreen" component={UserMainListScreen} />
-      <Stack.Screen options={{ headerShown: false,}} name="UserPropertiesScreen" component={UserPropertiesScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="UserPropertiesScreen" component={UserPropertiesScreen}/>
       <Stack.Screen options={{ headerShown: false,}} name="UserAddScreen" component={UserAddScreen} />
     </Stack.Navigator>
   );

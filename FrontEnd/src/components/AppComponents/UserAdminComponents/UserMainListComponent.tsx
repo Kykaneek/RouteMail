@@ -60,9 +60,12 @@ export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
           {users.map((user, index) => (
             <View key={index} style={styles.userBox}>
               <View style={styles.userBoxPart}>
-                <Text>{user.Name}</Text>
-                <Text>{user.SurName}</Text>
-                <Text>{user.CourierNumber}</Text>
+                <Text>Imię</Text>
+                <Text style ={styles.userBoxText}>{user.Name}</Text>
+                <Text>Nazwisko</Text>
+                <Text style ={styles.userBoxText}>{user.SurName}</Text>
+                <Text>Numer Kuriera</Text>
+                <Text style ={styles.userBoxText}>{user.CourierNumber}</Text>
               </View>
               <View style={styles.userBoxPart}>
                 <TouchableOpacity
@@ -92,8 +95,8 @@ const styles = StyleSheet.create({
   },
   topButton: {
     backgroundColor: '#075eec',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
     borderRadius: 10,
   },
   topButtonText: {
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 10,
     marginBottom: 10,
-    width: 100,
+    width: 110,
   },
   scrollButtonText: {
     color: '#fff',
@@ -133,8 +136,14 @@ const styles = StyleSheet.create({
   userBoxPart: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     width: 162.5,
+    marginLeft:15
+  },
+  userBoxText: {
+    color: '#000',
+    fontWeight: 'bold',
+    textAlign: 'left',
   },
 });
 

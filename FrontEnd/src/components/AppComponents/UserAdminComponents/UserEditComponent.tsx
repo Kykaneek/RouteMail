@@ -7,40 +7,54 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
+  Alert
 } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-export const UserEditComponent = ({ navigation }: { navigation: any }) => {
-  const [userData, setUserData] = useState({
-    imię: '',
-    nazwisko: '',
-    numerkuriera: '',
-    pojazd: '',
-    aktualneZlecenie: '',
-    email: '',
-    rola: '',
-  });
 
-  const BackToPageTwo = () => {
-    navigation.navigate('UserPropertiesScreen')
-  }
+export const UserEditComponent = ({ navigation, route }: { navigation: any, route: any }) => {
+  const [userData, setUserData] = useState<any>({});
 
   useEffect(() => {
-    // symulowanie pobrania danych z bazy
-    const fetchData = async () => {
-      try {
-        // miejsce na przyładowe API albo zapytanie do bazy danych
-        const response = await fetch('https://example.com/userData');
-        const data = await response.json();
-        // zakładając ze dane odpowiedzi mają strukturę { imię: '', nazwisko: '', ... }
-        setUserData(data);
-      } catch (error) {
-        console.error('Bład w pobieraniu danych użytkownika:', error);
-      }
-    };
+    if (route && route.params) {
+      const { userData } = route.params;
+      setUserData(userData);
+    }
+  }, [route]);
 
-    fetchData();
-  }, []);
+  const updateUser = () => {
+    fetch(`http://192.168.1.130/users/${userData.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    })
+    .then(response => {
+      if (response.ok) {
+        Alert.alert('Dane użytkownika zostały zaktualizowane!');
+        console.log('Test pomyślnie zdany');
+        navigation.navigate('UserPropertiesScreen');
+      } else {
+        throw new Error('Błąd podczas aktualizacji danych użytkownika');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      Alert.alert('Wystąpił błąd podczas aktualizacji danych użytkownika');
+    });
+  };
+
+  const handleInputChange = (key: string, value: string) => {
+    setUserData({ ...userData, [key]: value });
+  };
+
+  const clearInput = (key: string) => {
+    setUserData({ ...userData, [key]: '' });
+  };
+
+  const BackToPageTwo = () => {
+    navigation.navigate('UserPropertiesScreen');
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
@@ -55,77 +69,58 @@ export const UserEditComponent = ({ navigation }: { navigation: any }) => {
             <TextInput
               style={styles.value}
               placeholder="Imię"
-              value={userData.imię}
-              editable={false}
+              value={userData.name}
+              onChangeText={(text) => handleInputChange('name', text)}
             />
             <Text style={styles.label}>Nazwisko:</Text>
             <TextInput
               style={styles.value}
               placeholder="Nazwisko"
               value={userData.nazwisko}
-              editable={false}
+              onChangeText={(text) => handleInputChange('nazwisko', text)}
             />
             <Text style={styles.label}>Numer Kuriera:</Text>
             <TextInput
               style={styles.value}
               placeholder="Numer kuriera"
               value={userData.numerkuriera}
-              editable={false}
+              onChangeText={(text) => handleInputChange('numerkuriera', text)}
             />
           </View>
         </View>
 
         {/* Middle Text Fields */}
         <View style={styles.middleContainer}>
-          <Text style={styles.label}>Pojazd:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Pojazd"
-            value={userData.pojazd}
-            editable={false}
-          />
-          <Text style={styles.label}>Aktualne Zlecenie:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Aktualne zlecenie"
-            value={userData.aktualneZlecenie}
-            editable={false}
-          />
           <Text style={styles.label}>Email:</Text>
           <TextInput
             style={styles.value}
             placeholder="Email"
             value={userData.email}
-            editable={false}
+            onChangeText={(text) => handleInputChange('email', text)}
           />
           <Text style={styles.label}>Rola:</Text>
           <TextInput
             style={styles.value}
             placeholder="Rola"
             value={userData.rola}
-            editable={false}
+            onChangeText={(text) => handleInputChange('rola', text)}
           />
         </View>
 
         {/* Bottom Buttons */}
         <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Zmień hasło')}>
-            <Text style={styles.bottomButtonText}>Zmień hasło</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Usuń użytkownika')}>
-            <Text style={styles.bottomButtonText}>Usuń użytkownika</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Modyfikuj użytkownika')}>
-            <Text style={styles.bottomButtonText}>Modyfikuj użytkownika</Text>
+          <TouchableOpacity style={styles.bottomButton} onPress={updateUser}>
+            <Text style={styles.bottomButtonText}>Potwierdź</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.bottomButton} onPress={BackToPageTwo}>
-            <Text style={styles.bottomButtonText}>Powrót do strony</Text>
+            <Text style={styles.bottomButtonText}>Rezygnacja</Text>
           </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
   );
-}
+};
+
 
 const styles = StyleSheet.create({
   container: {
