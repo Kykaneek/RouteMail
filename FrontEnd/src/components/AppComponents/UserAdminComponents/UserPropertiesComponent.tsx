@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
-
+import { useFocusEffect } from '@react-navigation/native'; // Import hooka useFocusEffect
 
 const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
 
   useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  // Wywołaj funkcję fetchUserData za każdym razem, gdy ekran uzyska fokus nawigacji
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserData();
+    }, [])
+  );
+
+  const fetchUserData = () => {
     // Pobieranie danych użytkownika z parametrów nawigacji
     const { userData } = route.params;
     setUserData(userData);
-  }, []);
+  };
 
   const EditUser = () => {
     navigation.navigate('UserEditScreen', { userData: userData });
@@ -18,7 +29,6 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
   const BackToPage = () => {
     navigation.navigate('UserMainListScreen');
   };
-
 
   const RemoveUser = () => {
     Alert.alert(
@@ -54,6 +64,10 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
     );
   };
   
+  // Użyj hooka useEffect do odświeżenia danych użytkownika po edycji
+  useEffect(() => {
+    fetchUserData();
+  }, [userData]); // Odśwież, gdy zmienia się wartość userData
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
@@ -130,6 +144,7 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
           <TouchableOpacity style={styles.bottomButton} onPress={RemoveUser}>
             <Text style={styles.bottomButtonText}>Usuń użytkownika</Text>
           </TouchableOpacity>
+          {/* Użyj funkcji EditUser do nawigacji do ekranu edycji użytkownika */}
           <TouchableOpacity style={styles.bottomButton} onPress={EditUser}>
             <Text style={styles.bottomButtonText}>Modyfikuj użytkownika</Text>
           </TouchableOpacity>

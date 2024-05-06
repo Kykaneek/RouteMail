@@ -13,7 +13,6 @@ import {
 
 export const UserEditComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
-  const [refresh, setRefresh] = useState<boolean>(false);
 
   useEffect(() => {
     if (route && route.params) {
@@ -34,8 +33,7 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
       if (response.ok) {
         Alert.alert('Dane użytkownika zostały zaktualizowane!');
         console.log('Test pomyślnie zdany');
-        navigation.navigate('UserPropertiesScreen');
-        setRefresh(!refresh); // Odśwież komponent
+        navigation.navigate('UserPropertiesScreen', { refresh: true }); // Przekazanie flagi odświeżenia
       } else {
         throw new Error('Błąd podczas aktualizacji danych użytkownika');
       }
@@ -179,3 +177,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+export default UserEditComponent;

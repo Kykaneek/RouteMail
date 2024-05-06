@@ -8,6 +8,7 @@ import {
   TextInput,
   Image,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native'; // Import hooka useFocusEffect
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
@@ -16,6 +17,13 @@ export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
   useEffect(() => {
     fetchUsers();
   }, []);
+
+  // Wywołaj funkcję fetchUsers za każdym razem, gdy ekran uzyska fokus nawigacji
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUsers();
+    }, [])
+  );
 
   const fetchUsers = () => {
     // Pobranie danych użytkowników z backendu
