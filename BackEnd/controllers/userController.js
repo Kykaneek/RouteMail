@@ -91,5 +91,44 @@ export const changePassword = (req, res) => {
     });
   };
 
+
+  export const login =  (req, res) => {
+    const { email, password } = req.body;
+  
+    const query = `SELECT * FROM users WHERE Email = ?`;
+    db.query(query, [email], (err, result) => {
+      if (err) {
+        res.status(500).send('Database error');
+      } else {
+        if (result.length > 0) {
+          const user = result[0];
+          // Check password
+          if (user.Password === password) {
+            res.status(200).send({ message: 'Login successful', user });
+          } else {
+            res.status(401).send({ message: 'Incorrect password' });
+          }
+        } else {
+          res.status(404).send({ message: 'User not found' });
+        }
+      }
+    });
+  }
+
+
+async function comparePasswords(password, hashedPassword) {
+  try {
+    const match = await bcrypt.compare(password, hashedPassword); // Porównanie hasła z hashem
+    return match;
+  } catch (error) {
+    console.error('Błąd podczas porównywania haseł: ', error);
+    throw new Error('Błąd podczas porównywania haseł');
+  }
+}
+
+
+
+
+
 // 1. Przy pisaniu FrontEndu zmodyfikować kontrolery dodając modele pod lepszą organizację danych
 // 2. Zwrócić uwagę na autoryzację i rejestrację użytkownika wraz z zabezpieczeniem hasła

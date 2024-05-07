@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsers, createUser, updateUser, deleteUser,getUserById, changePassword } from '../controllers/userController.js';
+import { getUsers, createUser, updateUser, deleteUser,getUserById, changePassword, login} from '../controllers/userController.js';
 
 const router = express.Router();
 
@@ -8,8 +8,9 @@ const router = express.Router();
 router.get("/", getUsers);           //endpoint odczytu użytkownika
 router.get("/:id", getUserById);        //endpoint odczytu kokretnego użytkownika
 router.post("/", createUser);    
-router.post("/changepassword/:id", changePassword); //endpoint zmiany hasła
 router.put("/:id", updateUser);      //endpoint modyfikacji użytkownika
 router.delete("/:id", deleteUser);   //endpoint usunięcia użytkownika
 
+router.post("/changepassword/:id", changePassword); //endpoint zmiany hasła
+router.post("/login", login); //endpoint do logowania
 export default router;

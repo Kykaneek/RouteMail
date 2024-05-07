@@ -11,15 +11,33 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 const LoginComponent = ({ navigation }: { navigation: any }) => {
   const [form, setForm] = useState({
-    email: '',
-    password: '',
+    Email: '',
+    Password: '',
   });
+ 
+  
+  const handleSignIn = async () => {
+    console.log(form);
+    try {
+      const response = await fetch('http://192.168.1.130:8800/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+  
+      if (!response.ok) {
+        console.error('Błąd logowania: ', response.status);
+        return;
+      }
 
-  const handleSignIn = () => {
-    // Nawigacja do ekranu 'Screen2' po naciśnięciu przycisku "Zaloguj się"
-    navigation.navigate('UserViewScreen');
-    console.log('Sign in', form);
+      navigation.navigate('UserViewScreen');
+    } catch (error) {
+      console.error('Błąd logowania: ', error);
+    }
   };
+  
   
 
   const PasswordForgotten = () => {
@@ -49,11 +67,11 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="email-address"
-                onChangeText={email => setForm({ ...form, email })}
+                onChangeText={Email => setForm({ ...form, Email })}
                 placeholder="email@email.pl / Numer kuriera"
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
-                value={form.email} />
+                value={form.Email} />
             </View>
 
             <View style={styles.input}>
@@ -61,12 +79,12 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
 
               <TextInput
                 autoCorrect={false}
-                onChangeText={password => setForm({ ...form, password })}
+                onChangeText={Password => setForm({ ...form, Password })}
                 placeholder="********"
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 secureTextEntry={true}
-                value={form.password} />
+                value={form.Password} />
             </View>
 
             <View style={styles.formAction}>
