@@ -1,4 +1,5 @@
 import db from '../db/db.js';
+import bcrypt from 'bcrypt';
 
 //Do testów Kontrolerów i endpointów użyto wtyczki w Visual Studio Code 
 // ThunderClient
@@ -66,6 +67,29 @@ export const deleteUser = (req, res) => {
     });
 };
 
+
+export const changePassword = (req, res) => {
+    const { id, newPassword } = req.body;
+  
+    if (!id || !newPassword) {
+      return res.status(400).send("Brak danych wymaganych do zmiany hasła");
+    }
+  
+    // Zasalanie nowego hasła przed zapisaniem do bazy danych
+    bcrypt.hash(newPassword, 10, (hashErr, hash) => {
+      if (hashErr) {
+        return res.status(500).send("Błąd podczas hashowania nowego hasła");
+      }
+  
+      // Aktualizacja hasła użytkownika w bazie danych
+      db.query('UPDATE user SET password = ? WHERE id = ?', [hash, id], (updateError, updateResults, updateFields) => {
+        if (updateError) {
+          return res.status(500).send("Błąd podczas aktualizacji hasła");
+        }
+        res.status(200).send("Hasło zostało pomyślnie zmienione");
+      });
+    });
+  };
 
 // 1. Przy pisaniu FrontEndu zmodyfikować kontrolery dodając modele pod lepszą organizację danych
 // 2. Zwrócić uwagę na autoryzację i rejestrację użytkownika wraz z zabezpieczeniem hasła

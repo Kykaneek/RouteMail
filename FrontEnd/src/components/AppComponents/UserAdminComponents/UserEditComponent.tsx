@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -7,12 +7,14 @@ import {
   TouchableOpacity,
   TextInput,
   Image,
-  Alert
+  Alert,
+  ScrollView,
+  RefreshControl
 } from 'react-native';
-
 
 export const UserEditComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     if (route && route.params) {
@@ -33,7 +35,7 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
       if (response.ok) {
         Alert.alert('Dane użytkownika zostały zaktualizowane!');
         console.log('Test pomyślnie zdany');
-        navigation.navigate('UserPropertiesScreen', { refresh: true }); // Przekazanie flagi odświeżenia
+        handleRefresh();
       } else {
         throw new Error('Błąd podczas aktualizacji danych użytkownika');
       }
@@ -48,75 +50,90 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
     setUserData({ ...userData, [key]: value });
   };
 
-  const clearInput = (key: string) => {
-    setUserData({ ...userData, [key]: '' });
-  };
 
   const BackToPageTwo = () => {
     navigation.navigate('UserPropertiesScreen');
   };
 
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
+    setTimeout(() => {
+      setRefreshing(false); // Zakończ proces odświeżania
+      navigation.navigate('UserPropertiesScreen'); // Nawiguj do ekranu szczegółów użytkownika
+    }, 1000);
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
-      <View style={styles.container}>
-        {/* Top Photo Frame and Text Fields */}
-        <View style={styles.topContainer}>
-          <View style={styles.photoFrame}>
-            <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.photo} />
-          </View>
-          <View style={styles.textFields}>
-            <Text style={styles.label}>Imię:</Text>
-            <TextInput
-              style={styles.value}
-              placeholder="Imię"
-              value={userData.Name}
-              onChangeText={(text) => handleInputChange('Name', text)}
-            />
-            <Text style={styles.label}>Nazwisko:</Text>
-            <TextInput
-              style={styles.value}
-              placeholder="Nazwisko"
-              value={userData.SurName}
-              onChangeText={(text) => handleInputChange('SurName', text)}
-            />
-            <Text style={styles.label}>Numer Kuriera:</Text>
-            <TextInput
-              style={styles.value}
-              placeholder="Numer kuriera"
-              value={userData.CourierNumber}
-              onChangeText={(text) => handleInputChange('CourierNumber', text)}
-            />
-          </View>
-        </View>
-
-        {/* Middle Text Fields */}
-        <View style={styles.middleContainer}>
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Email"
-            value={userData.Email}
-            onChangeText={(text) => handleInputChange('Email', text)}
+      <ScrollView
+        style={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
           />
-          <Text style={styles.label}>Rola:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Rola"
-            value={userData.Role}
-            onChangeText={(text) => handleInputChange('Role', text)}
-          />
-        </View>
+        }
+      >
+        <View style={styles.container}>
+          {/* Top Photo Frame and Text Fields */}
+          <View style={styles.topContainer}>
+            <View style={styles.photoFrame}>
+              <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.photo} />
+            </View>
+            <View style={styles.textFields}>
+              <Text style={styles.label}>Imię:</Text>
+              <TextInput
+                style={styles.value}
+                placeholder="Imię"
+                value={userData.Name}
+                onChangeText={(text) => handleInputChange('Name', text)}
+              />
+              <Text style={styles.label}>Nazwisko:</Text>
+              <TextInput
+                style={styles.value}
+                placeholder="Nazwisko"
+                value={userData.SurName}
+                onChangeText={(text) => handleInputChange('SurName', text)}
+              />
+              <Text style={styles.label}>Numer Kuriera:</Text>
+              <TextInput
+                style={styles.value}
+                placeholder="Numer kuriera"
+                value={userData.CourierNumber}
+                onChangeText={(text) => handleInputChange('CourierNumber', text)}
+              />
+            </View>
+          </View>
 
-        {/* Bottom Buttons */}
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.bottomButton} onPress={updateUser}>
-            <Text style={styles.bottomButtonText}>Potwierdź</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={BackToPageTwo}>
-            <Text style={styles.bottomButtonText}>Rezygnacja</Text>
-          </TouchableOpacity>
+          {/* Middle Text Fields */}
+          <View style={styles.middleContainer}>
+            <Text style={styles.label}>Email:</Text>
+            <TextInput
+              style={styles.value}
+              placeholder="Email"
+              value={userData.Email}
+              onChangeText={(text) => handleInputChange('Email', text)}
+            />
+            <Text style={styles.label}>Rola:</Text>
+            <TextInput
+              style={styles.value}
+              placeholder="Rola"
+              value={userData.Role}
+              onChangeText={(text) => handleInputChange('Role', text)}
+            />
+          </View>
+
+          {/* Bottom Buttons */}
+          <View style={styles.bottomContainer}>
+            <TouchableOpacity style={styles.bottomButton} onPress={updateUser}>
+              <Text style={styles.bottomButtonText}>Potwierdź</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomButton} onPress={BackToPageTwo}>
+              <Text style={styles.bottomButtonText}>Rezygnacja</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };

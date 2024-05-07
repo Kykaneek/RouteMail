@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Image, Alert } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Image, Alert, ScrollView, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // Import hooka useFocusEffect
 
 const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
-
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
     fetchUserData();
   }, []);
 
   // Wywołaj funkcję fetchUserData za każdym razem, gdy ekran uzyska fokus nawigacji
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchUserData();
     }, [])
   );
@@ -23,9 +23,14 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
   };
 
   const EditUser = () => {
-    navigation.navigate('UserEditScreen', { userData: userData });
+    navigation.navigate('UserEditScreen', { userData: userData }); // Przekazanie danych użytkownika do ekranu edycji
+    console.log(userData);
   };
 
+  const ChangePassword = () => {
+    navigation.navigate('ChangePasswordScreen', { userData: userData });
+  };
+  
   const BackToPage = () => {
     navigation.navigate('UserMainListScreen');
   };
@@ -63,96 +68,110 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
       { cancelable: false }
     );
   };
-  
-  // Użyj hooka useEffect do odświeżenia danych użytkownika po edycji
-  useEffect(() => {
-    fetchUserData();
-  }, [userData]); // Odśwież, gdy zmienia się wartość userData
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
+    setTimeout(() => {
+      fetchUserData();
+      setRefreshing(false);
+    }, 1000);
+  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
-      <View style={styles.container}>
-        {/* Górny kontener z danymi użytkownika */}
-        <View style={styles.topContainer}>
-          {/* Ramka z obrazkiem */}
-          <View style={styles.photoFrame}>
-            <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.photo} />
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }
+      >
+        <View style={styles.container}>
+          {/* Górny kontener z danymi użytkownika */}
+          <View style={styles.topContainer}>
+            {/* Ramka z obrazkiem */}
+            <View style={styles.photoFrame}>
+              <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.photo} />
+            </View>
+            {/* Pola tekstowe */}
+            <View style={styles.textFields}>
+              <Text style={styles.label}>Imię:</Text>
+              <TextInput
+                style={styles.value}
+                placeholder="Imię"
+                value={userData.Name}
+                editable={false}
+              />
+              <Text style={styles.label}>Nazwisko:</Text>
+              <TextInput
+                style={styles.value}
+                placeholder="Nazwisko"
+                value={userData.SurName}
+                editable={false}
+              />
+              <Text style={styles.label}>Numer Kuriera:</Text>
+              <TextInput
+                style={styles.value}
+                placeholder="Numer kuriera"
+                value={userData.CourierNumber}
+                editable={false}
+              />
+            </View>
           </View>
-          {/* Pola tekstowe */}
-          <View style={styles.textFields}>
-            <Text style={styles.label}>Imię:</Text>
+
+          {/* Środkowy kontener z dodatkowymi danymi użytkownika */}
+          <View style={styles.middleContainer}>
+            <Text style={styles.label}>Pojazd:</Text>
             <TextInput
               style={styles.value}
-              placeholder="Imię"
-              value={userData.Name}
+              placeholder="Pojazd"
+              value={userData.pojazd}
               editable={false}
             />
-            <Text style={styles.label}>Nazwisko:</Text>
+            <Text style={styles.label}>Aktualne Zlecenie:</Text>
             <TextInput
               style={styles.value}
-              placeholder="Nazwisko"
-              value={userData.SurName}
+              placeholder="Aktualne zlecenie"
+              value={userData.aktualneZlecenie}
               editable={false}
             />
-            <Text style={styles.label}>Numer Kuriera:</Text>
+            <Text style={styles.label}>Email:</Text>
             <TextInput
               style={styles.value}
-              placeholder="Numer kuriera"
-              value={userData.CourierNumber}
+              placeholder="Email"
+              value={userData.Email}
+              editable={false}
+            />
+            <Text style={styles.label}>Rola:</Text>
+            <TextInput
+              style={styles.value}
+              placeholder="Rola"
+              value={userData.Role}
               editable={false}
             />
           </View>
-        </View>
 
-        {/* Środkowy kontener z dodatkowymi danymi użytkownika */}
-        <View style={styles.middleContainer}>
-          <Text style={styles.label}>Pojazd:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Pojazd"
-            value={userData.pojazd}
-            editable={false}
-          />
-          <Text style={styles.label}>Aktualne Zlecenie:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Aktualne zlecenie"
-            value={userData.aktualneZlecenie}
-            editable={false}
-          />
-          <Text style={styles.label}>Email:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Email"
-            value={userData.Email}
-            editable={false}
-          />
-          <Text style={styles.label}>Rola:</Text>
-          <TextInput
-            style={styles.value}
-            placeholder="Rola"
-            value={userData.Role}
-            editable={false}
-          />
+          {/* Dolny kontener z przyciskami */}
+          <View style={styles.bottomContainer}>
+            <TouchableOpacity style={styles.bottomButton} onPress={ChangePassword}>
+              <Text style={styles.bottomButtonText}>Zmień hasło</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomButton} onPress={RemoveUser}>
+              <Text style={styles.bottomButtonText}>Usuń użytkownika</Text>
+            </TouchableOpacity>
+            {/* Użyj funkcji EditUser do nawigacji do ekranu edycji użytkownika */}
+            <TouchableOpacity style={styles.bottomButton} onPress={EditUser}>
+              <Text style={styles.bottomButtonText}>Modyfikuj użytkownika</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.bottomButton} onPress={BackToPage}>
+              <Text style={styles.bottomButtonText}>Powrót do strony</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
-        {/* Dolny kontener z przyciskami */}
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.bottomButton} onPress={() => console.log('Zmień hasło')}>
-            <Text style={styles.bottomButtonText}>Zmień hasło</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={RemoveUser}>
-            <Text style={styles.bottomButtonText}>Usuń użytkownika</Text>
-          </TouchableOpacity>
-          {/* Użyj funkcji EditUser do nawigacji do ekranu edycji użytkownika */}
-          <TouchableOpacity style={styles.bottomButton} onPress={EditUser}>
-            <Text style={styles.bottomButtonText}>Modyfikuj użytkownika</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={BackToPage}>
-            <Text style={styles.bottomButtonText}>Powrót do strony</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -210,6 +229,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  scrollView: {
+    flexGrow: 1,
   },
 });
 
