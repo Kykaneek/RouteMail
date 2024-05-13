@@ -1,62 +1,74 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 
 export const VehicleView = ({ navigation }: { navigation: any }) => {
-  const [vehicles, setVehicles] = useState([]);
-  const [selectedVehicle, setSelectedVehicle] = useState('');
+  const [vechicles, setVehicles] = useState<any[]>([]);
 
-  const GoBack = () => {
-    navigation.navigate('UserViewScreen')
-  }
-  // Pobieranie danych pojazdów z serwera
-  const fetchVehicles = async () => {
-    try {
-      // Pobieranie danych z serwera
-      const data = await fetchDataFromServer();
-      // Ustawienie danych pojazdów w stanie
-      setVehicles(data);
-    } catch (error) {
-      console.error('Błąd podczas pobierania danych pojazdów:', error);
-    }
-  };
-
-  // Pobranie danych pojazdów z serwera po zamontowaniu komponentu
   useEffect(() => {
     fetchVehicles();
   }, []);
 
-  const handleVehicleSelect = (vehicle) => {
-    setSelectedVehicle(vehicle);
+  const GoBack = () => {
+    navigation.navigate('UserViewScreen');
   };
 
-  const handleAddVehicle = () => {
-    // Obsługa dodawania nowego pojazdu
+  const ViewProperties = () => {
+    navigation.navigate('VehiclePropiertisViewScreen');
   };
+  
+
+  const fetchVehicles = () => {
+    // Pobranie danych użytkowników z backendu
+    fetch('http://192.168.1.11:8800/vechicles')
+      .then(response => response.json())
+      .then(data => {
+        setVehicles(data);
+      })
+      .catch(error => {
+        console.error('Error fetching users:', error);
+      });
+  };
+
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Pojazd</Text>
-        <ScrollView contentContainerStyle={styles.vehicleButtonsContainer}>
-          {vehicles.map((vehicle, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.vehicleButton}
-              onPress={() => handleVehicleSelect(vehicle)}
-            >
-              <Text style={styles.vehicleButtonText}>{vehicle.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <View style={styles.bottomButtonsContainer}>
-          <TouchableOpacity style={styles.bottomButton} onPress={handleAddVehicle}>
-            <Text style={styles.bottomButtonText}>Dodaj</Text>
+    
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topButtons}>
+          <TouchableOpacity style={styles.topButton}>
+            <Text style={styles.topButtonText} onPress={GoBack}>Powrót</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={GoBack}>
-            <Text style={styles.bottomButtonText}>Powrót</Text>
+          <TouchableOpacity style={styles.topButton}>
+            <Text style={styles.topButtonText}>Dodaj</Text>
           </TouchableOpacity>
-        </View>
-      </View>
+          </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {vechicles.map(vehicle => (
+          <TouchableOpacity
+            key={vehicle.id}
+            onPress={ViewProperties}
+            style={[styles.vehicleBlock]}
+           >
+            <View>
+              <Text style={styles.vehicleBrand}>{vehicle.Name}</Text>
+              <Text style={styles.vehicleModel}>{vehicle.Model}</Text>
+              {vehicle.inUse !== null && (
+                <View style={styles.courierInfo}>
+                  <Text>Kurier: {vehicle.courierNumber}</Text>
+                  <Text>{vehicle.courierFirstName} {vehicle.courierLastName}</Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -64,46 +76,56 @@ export const VehicleView = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#e8ecf4',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  vehicleButtonsContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  vehicleButton: {
-    backgroundColor: '#075eec',
-    paddingVertical: 10,
+  topButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
-    borderRadius: 10,
+    marginTop: 10,
     marginBottom: 10,
   },
-  vehicleButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  bottomButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
-  },
-  bottomButton: {
+  topButton: {
     backgroundColor: '#075eec',
     paddingVertical: 15,
-    paddingHorizontal: 40,
+    paddingHorizontal: 25,
     borderRadius: 10,
   },
-  bottomButtonText: {
+  topButtonText: {
     color: '#fff',
     fontWeight: 'bold',
+  },
+  scrollViewContent: {
+    padding: 20,
+  },
+  vehicleBlock: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  selectedVehicle: {
+    borderWidth: 2,
+    borderColor: 'blue',
+  },
+  vehicleBrand: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  vehicleModel: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  courierInfo: {
+    marginTop: 10,
+  },
+  releaseBtn: {
+    color: 'red',
+    marginTop: 5,
+  },
+  selectBtn: {
+    color: 'blue',
+    marginTop: 5,
   },
 });

@@ -7,12 +7,15 @@ interface Props {
   initialBrand: string;
   initialModel: string;
   onSave: (brand: string, model: string) => void;
-  onCancel: () => void;
 }
 
-export const VehicleEdit = ({ navigation, vehicleName, initialBrand, initialModel, onSave, onCancel }: Props) => {
+export const VehicleEdit = ({ navigation, vehicleName, initialBrand, initialModel, onSave}: Props) => {
   const [brand, setBrand] = useState(initialBrand);
   const [model, setModel] = useState(initialModel);
+
+  const GoBack = () => {
+    navigation.navigate('VehiclePropiertisViewScreen');
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
@@ -21,16 +24,18 @@ export const VehicleEdit = ({ navigation, vehicleName, initialBrand, initialMode
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Marka:</Text>
           <TextInput
-            style={styles.input}
+            style={styles.inputControl}
             value={brand}
             onChangeText={setBrand}
             placeholder="Wprowadź markę"
           />
+          
+            
         </View>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Model:</Text>
           <TextInput
-            style={styles.input}
+            style={styles.inputControl}
             value={model}
             onChangeText={setModel}
             placeholder="Wprowadź model"
@@ -40,7 +45,7 @@ export const VehicleEdit = ({ navigation, vehicleName, initialBrand, initialMode
           <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={() => onSave(brand, model)}>
             <Text style={styles.buttonText}>Zatwierdź</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={onCancel}>
+          <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={GoBack}>
             <Text style={styles.buttonText}>Rezygnuj</Text>
           </TouchableOpacity>
         </View>
@@ -68,6 +73,7 @@ const styles = StyleSheet.create({
   inputLabel: {
     fontWeight: 'bold',
     marginRight: 10,
+    marginBottom: 0
   },
   input: {
     flex: 1,
@@ -76,9 +82,12 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     paddingHorizontal: 10,
+    width: '70%',
+    
   },
   buttonContainer: {
     flexDirection: 'row',
+    justifyContent: 'center'
   },
   button: {
     paddingVertical: 15,
@@ -96,5 +105,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     textAlign: 'center',
+  },
+  inputControl: {
+    height: 50,
+    width: 350,
+    backgroundColor: '#fff',
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#222',
+    borderWidth: 1,
+    borderColor: '#C9D3DB',
+    borderStyle: 'solid',
   },
 });
