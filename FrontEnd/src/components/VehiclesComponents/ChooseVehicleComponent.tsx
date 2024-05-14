@@ -194,6 +194,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
+    width: '100%',
   },
   topButtonText: {
     color: '#fff',
