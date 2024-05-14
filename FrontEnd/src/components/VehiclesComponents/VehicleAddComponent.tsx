@@ -1,32 +1,24 @@
-import React, { useState, useEffect, useCallback} from 'react';
-import { StyleSheet, SafeAreaView, View, RefreshControl, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 
-export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}) => {
-  const [VehicleData, setVehicleData] = useState<any>({});
-  const [refreshing, setRefreshing] = useState(false);
+export const VehicleAdd = ({ navigation}: { navigation: any}) => {
+  const [VehicleData, setVehicleData] = useState<any>({
+    Name: '',
+    Model: '',
+  });
 
   useEffect(() => {
-    console.log(route.params);
-    if (route && route.params) {
-      const { VehicleData } = route.params;
       setVehicleData(VehicleData);
-    }
-  }, [route]);
+  });
 
   const GoBack = () => {
-    navigation.navigate('VehiclePropiertisViewScreen');
+    navigation.navigate('VehicleViewScreen');
   };
 
-  const FetchVehicleData = () => {
-    const { VehicleData } = route.params;
-    setVehicleData(VehicleData);
-    
-  };
-
-  const updateVehicle = () => {
-    fetch(`http://192.168.1.11:8800/vechicles/${VehicleData.id}`, {
-      method: 'PUT',
+  const createVehicle = () => {
+    fetch('http://192.168.1.11:8800/vechicles', {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
@@ -34,31 +26,21 @@ export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}
     })
     .then(response => {
       if (response.ok) {
-        Alert.alert('Dane pojazdu zostały zaktualizowane!');
-        console.log('Test pomyślnie zdany');
-        handleRefresh();
+        Alert.alert('Pojazd został dodany!');
+        navigation.navigate('VehicleViewScreen');
       } else {
-        throw new Error('Błąd podczas aktualizacji danych pojazdu');
+        throw new Error('Błąd podczas tworzenia pojazdu');
       }
     })
     .catch(error => {
       console.error(error);
-      Alert.alert('Wystąpił błąd podczas aktualizacji danych pojazdu');
+      Alert.alert('Wystąpił błąd podczas tworzenia pojazdu');
     });
   };
 
   const handleInputChange = (key: string, value: string) => {
     setVehicleData({ ...VehicleData, [key]: value });
   };
-
-  const handleRefresh = useCallback(() => {
-    setRefreshing(true);
-    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
-    setTimeout(() => {
-      setRefreshing(false); // Zakończ proces odświeżania
-      navigation.navigate('VehiclePropiertisViewScreen'); // Nawiguj do ekranu szczegółów użytkownika
-    }, 1000);
-  }, []);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
@@ -67,10 +49,8 @@ export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}
           <Text style={styles.inputLabel}>Marka:</Text>
           <TextInput
             style={styles.inputControl}
-            placeholder="Wprowadź markę"
-            value={VehicleData.Name}
             onChangeText={(text) => handleInputChange('Name', text)}
-            
+            placeholder="Wprowadź markę"
           />
           
             
@@ -79,14 +59,13 @@ export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}
           <Text style={styles.inputLabel}>Model:</Text>
           <TextInput
             style={styles.inputControl}
-            value={VehicleData.Model}
             onChangeText={(text) => handleInputChange('Model', text)}
             placeholder="Wprowadź model"
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={updateVehicle} >
-            <Text style={styles.buttonText}>Zatwierdź</Text>
+          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={createVehicle}>
+            <Text style={styles.buttonText}>Utwórz</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={GoBack}>
             <Text style={styles.buttonText}>Rezygnuj</Text>

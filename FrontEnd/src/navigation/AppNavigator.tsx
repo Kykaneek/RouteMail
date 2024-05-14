@@ -21,6 +21,7 @@ import UserMainListScreen from '../screens/AppScreens/UserAdminScreens/UserMainL
 import UserPropertiesScreen from '../screens/AppScreens/UserAdminScreens/UserPropertiesScreen';
 import UserAddScreen from '../screens/AppScreens/UserAdminScreens/UserAddScreen';
 import ChooseVehicleScreen from '../screens/AppScreens/VehicleScreens/ChooseVehicleScreen';
+import VehicleAddViewScreen from '../screens/AppScreens/VehicleScreens/VehicleAddScreen';
 
 const Stack = createStackNavigator();
 
@@ -48,6 +49,7 @@ const AppNavigation = () => {
       <Stack.Screen options={{ headerShown: false,}} name="UserPropertiesScreen" component={UserPropertiesScreen}/>
       <Stack.Screen options={{ headerShown: false,}} name="UserAddScreen" component={UserAddScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="ChooseVehicleScreen" component={ChooseVehicleScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VehicleAddViewScreen" component={VehicleAddViewScreen} />
     </Stack.Navigator>
   );
 };

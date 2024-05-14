@@ -5,8 +5,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type VehiclePropiertisScreenProp = StackNavigationProp<{ VehicleP: undefined }>;
 
-const VehiclePropiertisViewScreen = ({ navigation }: { navigation: VehiclePropiertisScreenProp  }) => {
-  return < VehiclePropiertisViewComponent  navigation={navigation} />;
+const VehiclePropiertisViewScreen = ({ navigation, route }: { navigation: VehiclePropiertisScreenProp, route: VehiclePropiertisScreenProp}) => {
+  return < VehiclePropiertisViewComponent  navigation={navigation} route={route} />;
 };
 
 export default VehiclePropiertisViewScreen ;

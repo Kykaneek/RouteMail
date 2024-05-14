@@ -5,8 +5,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type VehicleEditScreenProp = StackNavigationProp<{ VehicleE: undefined }>;
 
-const VehicleEditViewScreen = ({ navigation }: { navigation: VehicleEditScreenProp  }) => {
-  return < VehicleEdit navigation={navigation} />;
+const VehicleEditViewScreen = ({ navigation, route }: { navigation: VehicleEditScreenProp, route: VehicleEditScreenProp}) => {
+  return < VehicleEdit navigation={navigation} route={route} />;
 };
 
 export default VehicleEditViewScreen ;

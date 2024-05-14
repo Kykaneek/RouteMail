@@ -12,7 +12,7 @@ export const getVechicle = (req, res) => {
 //Kontroler odczytu konkretnego pojazdu 
 export const getVehicleById = (req, res) => {
     const vehicleId = req.params.id;
-    const query = "SELECT * FROM Vechicle WHERE id = ?";
+    const query = "SELECT * FROM vechicle WHERE id = ?";
     db.query(query, [vehicleId], (err, results) => {
         if(err) return res.json(err)
         return res.json(data);
@@ -56,6 +56,15 @@ export const deleteVehicle = (req, res) => {
     const query = "DELETE FROM vechicle WHERE id = ?";
     db.query(query, [vehicleId], (err, results) => {
         if(err) return res.status(500).json(err);
-        return res.json(data);
+        return res.json();
     });
 };
+/** 
+export const deleteUser = (req, res) => {
+    const userId = req.params.id;
+    const q = "DELETE FROM user WHERE id = ?"; //Usuń użytkownika o tym ID
+    db.query(q, userId, (err, result) => { 
+        if (err) return res.status(500).json(err); //Zwróć komunikat o błędzie 
+        return res.json(); //Zwróć informacje o usuniętych danych
+    });
+};*/
