@@ -195,6 +195,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
     borderRadius: 10,
     width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   topButtonText: {
     color: '#fff',
