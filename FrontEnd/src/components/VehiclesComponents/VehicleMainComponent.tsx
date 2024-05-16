@@ -24,7 +24,7 @@ export const VehicleView = ({ navigation }: { navigation: any }) => {
   );
 
   const fetchVehicles = () => {
-    // Pobranie danych użytkowników z backendu
+    // Pobranie danych pojazdów z backendu
     fetch('http://192.168.1.11:8800/vechicles')
       .then(response => response.json())
       .then(data => {

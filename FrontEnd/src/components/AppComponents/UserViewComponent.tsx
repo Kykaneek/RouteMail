@@ -17,6 +17,10 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
     navigation.navigate('UserMainListScreen')
   }
 
+  const GoToVillage = () => {
+    navigation.navigate('VillageMainScreen')
+  }
+
   return (
     <View style={styles.outerContainer}>
       <View style={styles.userDataContainer}>
@@ -45,6 +49,11 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
         <View style={styles.buttonsInnerContainer}>
           <TouchableOpacity style={styles.button} onPress={GoToOrders}>
             <Text style={styles.buttonText}>Zlecenia</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.buttonsInnerContainer}>
+          <TouchableOpacity style={styles.button} onPress={GoToVillage}>
+            <Text style={styles.buttonText}>Miejscowości</Text>
           </TouchableOpacity>
         </View>
         <View style={styles.buttonsInnerContainer}>

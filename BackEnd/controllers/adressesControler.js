@@ -9,7 +9,9 @@ export const getAdresses = (req, res) => {
 
     console.log("Received data:", req.body);
     // Przygotowanie zapytania SQL
-    const q = "SELECT * FROM `adresses`";
+
+    //kod do poprawy by adresy wyświetlały się dla konkretnych miejscowości
+    const q = "SELECT * FROM `adresses` WHERE VillageId = 1";
     
     // Wykonanie zapytania do bazy danych
     db.query(q, (err, data) => {
