@@ -10,15 +10,13 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
     fetchUserData();
   }, []);
 
-  // Wywołaj funkcję fetchUserData za każdym razem, gdy ekran uzyska fokus nawigacji
-  useFocusEffect(
+useFocusEffect(
     useCallback(() => {
       fetchUserData();
     }, [])
   );
 
   const fetchUserData = () => {
-    // Pobieranie danych użytkownika z parametrów nawigacji
     const { userData } = route.params;
     setUserData(userData);
   };

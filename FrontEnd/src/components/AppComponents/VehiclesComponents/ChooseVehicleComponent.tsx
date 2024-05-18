@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { fetchVehicles } from '../../../services/AppServices/vehiclesServices';
 
 interface Vehicle {
   id: number;
@@ -25,28 +26,28 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
   const [userId, setUserId] = useState(123); // Id aktualnego użytkownika, do zmiany
 
   useEffect(() => {
-    fetchVehicles();
+    fetchVehiclesData();
   }, []);
 
   const GoBack = () => {
     navigation.navigate('UserViewScreen');
   };
 
-  const fetchVehicles = () => {
-    fetch('http://192.168.1.55:8800/vehicles')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setVehicles(data);
-      })
-      .catch(error => {
-        console.error('Error fetching vehicles:', error);
-        Alert.alert('Error', 'There was an issue fetching the vehicle data.');
-      });
+
+  const fetchVehiclesData = async () => {
+    try
+    {
+      const vehicleData = await fetchVehicles();
+      setVehicles(vehicleData);
+    }
+    catch (error) 
+    {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Wystąpił nieznany błąd");
+      }
+    }
   };
 
   const handleSelectVehicle = (vehicle: Vehicle) => {
@@ -67,7 +68,7 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
           {
             text: 'Tak',
             onPress: () => {
-              fetch(`http://192.168.1.55:8088/vehicles/${vehicle.id}`, {
+              fetch(`http://192.168.1.130:8088/vehicles/${vehicle.id}`, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
@@ -109,7 +110,7 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
         {
           text: 'Tak',
           onPress: () => {
-            fetch(`http://192.168.1.55:8088/vehicles/${vehicle.id}`, {
+            fetch(`http://192.168.1.130:8088/vehicles/${vehicle.id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',

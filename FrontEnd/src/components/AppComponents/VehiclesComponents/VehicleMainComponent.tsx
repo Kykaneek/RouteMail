@@ -9,32 +9,37 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
+import { fetchVehicles } from '../../../services/AppServices/vehiclesServices';
+
 
 export const VehicleView = ({ navigation }: { navigation: any }) => {
   const [vechicles, setVehicles] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchVehicles();
+    fetchVehiclesData();
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchVehicles();
+      fetchVehiclesData();
     }, [])
   );
 
-  const fetchVehicles = () => {
-    // Pobranie danych pojazdów z backendu
-    fetch('http://192.168.1.11:8800/vechicles')
-      .then(response => response.json())
-      .then(data => {
-        setVehicles(data);
-      })
-      .catch(error => {
-        console.error('Error fetching vehicles:', error);
-      });
+  const fetchVehiclesData = async () => {
+    try
+    {
+      const vehicleData = await fetchVehicles();
+      setVehicles(vehicleData);
+    }
+    catch (error) 
+    {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Wystąpił nieznany błąd");
+      }
+    }
   };
-
   const GoBack = () => {
     navigation.navigate('UserViewScreen');
   };
@@ -71,7 +76,6 @@ export const VehicleView = ({ navigation }: { navigation: any }) => {
               <Text style={styles.vehicleModel}>{vehicle.Model}</Text>
               {vehicle.inUse !== null && (
                 <View style={styles.courierInfo}>
-                  <Text>Kurier: {vehicle.courierNumber}</Text>
                   <Text>{vehicle.courierFirstName} {vehicle.courierLastName}</Text>
                 </View>
               )}

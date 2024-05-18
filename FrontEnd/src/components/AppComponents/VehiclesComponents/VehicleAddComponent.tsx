@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { createVehicle } from '../../../services/AppServices/vehiclesServices';
 
 
 export const VehicleAdd = ({ navigation}: { navigation: any}) => {
@@ -16,26 +17,17 @@ export const VehicleAdd = ({ navigation}: { navigation: any}) => {
     navigation.navigate('VehicleViewScreen');
   };
 
-  const createVehicle = () => {
-    fetch('http://192.168.1.11:8800/vechicles', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(VehicleData)
-    })
-    .then(response => {
-      if (response.ok) {
+
+  const create_Vehicle = async () => {
+    try {
+      const success = await createVehicle(VehicleData);
+      if (success) {
         Alert.alert('Pojazd został dodany!');
         navigation.navigate('VehicleViewScreen');
-      } else {
-        throw new Error('Błąd podczas tworzenia pojazdu');
       }
-    })
-    .catch(error => {
-      console.error(error);
+    } catch (error) {
       Alert.alert('Wystąpił błąd podczas tworzenia pojazdu');
-    });
+    }
   };
 
   const handleInputChange = (key: string, value: string) => {
@@ -64,7 +56,7 @@ export const VehicleAdd = ({ navigation}: { navigation: any}) => {
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={createVehicle}>
+          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={create_Vehicle}>
             <Text style={styles.buttonText}>Utwórz</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={GoBack}>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback} from 'react';
 import { StyleSheet, SafeAreaView, View, RefreshControl, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
-
+import { updateVehicle } from '../../../services/AppServices/vehiclesServices';
 
 export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}) => {
   const [VehicleData, setVehicleData] = useState<any>({});
@@ -18,33 +18,17 @@ export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}
     navigation.navigate('VehiclePropiertisViewScreen');
   };
 
-  const FetchVehicleData = () => {
-    const { VehicleData } = route.params;
-    setVehicleData(VehicleData);
-    
-  };
 
-  const updateVehicle = () => {
-    fetch(`http://192.168.1.11:8800/vechicles/${VehicleData.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(VehicleData)
-    })
-    .then(response => {
-      if (response.ok) {
-        Alert.alert('Dane pojazdu zostały zaktualizowane!');
-        console.log('Test pomyślnie zdany');
+  const update_Vehicle = async () => {
+    try {
+      const success = await updateVehicle(VehicleData);
+      if (success) {
+        Alert.alert('Dane użytkownika zostały zaktualizowane!');
         handleRefresh();
-      } else {
-        throw new Error('Błąd podczas aktualizacji danych pojazdu');
       }
-    })
-    .catch(error => {
-      console.error(error);
-      Alert.alert('Wystąpił błąd podczas aktualizacji danych pojazdu');
-    });
+    } catch (error) {
+      Alert.alert('Wystąpił błąd podczas aktualizacji danych użytkownika');
+    }
   };
 
   const handleInputChange = (key: string, value: string) => {
@@ -85,7 +69,7 @@ export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={updateVehicle} >
+          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={update_Vehicle} >
             <Text style={styles.buttonText}>Zatwierdź</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={GoBack}>

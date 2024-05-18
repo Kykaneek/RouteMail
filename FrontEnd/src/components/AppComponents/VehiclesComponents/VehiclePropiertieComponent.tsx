@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
+import { removeVehicle } from '../../../services/AppServices/vehiclesServices';
 
 export const VehiclePropiertisViewComponent = ({ navigation, route}: { navigation: any, route: any}) => {
   const [VehicleData, setVehicle] = useState<any>({});
@@ -15,6 +15,7 @@ export const VehiclePropiertisViewComponent = ({ navigation, route}: { navigatio
       FetchVehicleData();
     }, [])
   );
+
 /** 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -39,29 +40,23 @@ export const VehiclePropiertisViewComponent = ({ navigation, route}: { navigatio
     navigation.navigate('VehicleEditViewScreen', { VehicleData: VehicleData });
   };
 
-  const RemoveVehicle = () => {
+  const RemoveVehicle = async () => {
     Alert.alert(
       'Potwierdź',
       'Czy na pewno chcesz usunąć ten pojazd?',
       [
         {
           text: 'Tak',
-          onPress: () => {
-            fetch(`http://192.168.1.11:8800/vechicles/${VehicleData.id}`, {
-              method: 'DELETE'
-            })
-            .then(response => {
-              if (response.ok) {
+          onPress: async () => {
+            try {
+              const success = await removeVehicle(VehicleData.id);
+              if (success) {
                 Alert.alert('Pojazd został usunięty!');
                 navigation.navigate('VehicleViewScreen');
-              } else {
-                throw new Error('Błąd podczas usuwania pojazdu');
               }
-            })
-            .catch(error => {
-              console.error(error);
-              Alert.alert('Wystąpił błąd podczas usuwania pojazdu');
-            });
+            } catch (error) {
+              Alert.alert('Wystąpił błąd podczas usuwania pojazdy');
+            }
           },
         },
         {
@@ -72,7 +67,6 @@ export const VehiclePropiertisViewComponent = ({ navigation, route}: { navigatio
       { cancelable: false }
     );
   };
-
 
 
 
