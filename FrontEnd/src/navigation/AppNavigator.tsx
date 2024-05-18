@@ -12,8 +12,8 @@ import VehicleEditViewScreen from '../screens/AppScreens/VehicleScreens/VehicleE
 import VillageMainScreen from '../screens/AppScreens/VillageScreens/VillageMainScreen';
 import VillagePropiertieAdresScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieAdresScreen';
 import VillagePropiertieVillageScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
-import VillageEditVillageScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
-import VillageEditAdresScreen from '../screens/AppScreens/VillageScreens/VillagePropiertieVillageScreen';
+import VillageEditVillageScreen from '../screens/AppScreens/VillageScreens/VillageEditVillageScreen';
+import VillageEditAdresScreen from '../screens/AppScreens/VillageScreens/VillageEditAdresScreen';
 
 import ChangePasswordScreen from '../screens/AppScreens/UserAdminScreens/ChangePasswordScreen';
 import UserEditScreen from '../screens/AppScreens/UserAdminScreens/UserEditScreen';
@@ -22,6 +22,8 @@ import UserPropertiesScreen from '../screens/AppScreens/UserAdminScreens/UserPro
 import UserAddScreen from '../screens/AppScreens/UserAdminScreens/UserAddScreen';
 import ChooseVehicleScreen from '../screens/AppScreens/VehicleScreens/ChooseVehicleScreen';
 import VehicleAddViewScreen from '../screens/AppScreens/VehicleScreens/VehicleAddScreen';
+import VillageAddAdresScreen from '../screens/AppScreens/VillageScreens/VillageAddAdresScreen';
+import VillageAddVillageScreen from '../screens/AppScreens/VillageScreens/VillageAddVillageScreen';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +52,8 @@ const AppNavigation = () => {
       <Stack.Screen options={{ headerShown: false,}} name="UserAddScreen" component={UserAddScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="ChooseVehicleScreen" component={ChooseVehicleScreen} />
       <Stack.Screen options={{ headerShown: false,}} name="VehicleAddViewScreen" component={VehicleAddViewScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillageAddAdresScreen" component={VillageAddAdresScreen} />
+      <Stack.Screen options={{ headerShown: false,}} name="VillageAddVillageScreen" component={VillageAddVillageScreen} />
     </Stack.Navigator>
   );
 };

@@ -1,43 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-export const VillagePropiertieAdresView = ({ navigation }: { navigation: any }) => {
-  const [coordinates, setCoordinates] = useState('');
-  
-  // Funkcja fetchCoordinates pobiera dane o koordynatach związanych z danym adresem z serwera
-  const fetchCoordinates = async () => {
-    try {
-      // Pobieranie danych z serwera na podstawie wybranego adresu
-      const data = await fetchCoordinatesFromServer(selectedAddress);
-      // Ustawienie danych koordynatów w stanie
-      setCoordinates(data);
-    } catch (error) {
-      console.error('Błąd podczas pobierania danych koordynatów:', error);
-    }
-  };
 
-  // Pobranie danych koordynatów po zamontowaniu komponentu
+export const VillagePropiertieAdresView = ({ navigation, route}: { navigation: any, route: any}) => {
+  const [AdresData, setAdres] = useState<any>({});
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
-    fetchCoordinates();
+    FetchAdresData();
   }, []);
 
-  const handleDeleteAddress = () => {
-    // Obsługa usuwania adresu
+  useFocusEffect(
+    useCallback(() => {
+      FetchAdresData();
+    }, [])
+  );
+/** 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
+    setTimeout(() => {
+      FetchAdresData();
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+*/
+  const FetchAdresData = () => {
+    const { AdresData } = route.params;
+    setAdres(AdresData);
   };
+  
+
+  const GoBack = () => {
+    navigation.navigate('VillagePropiertieVillageScreen');
+  };
+
+  const GoToEdition = () => {
+    navigation.navigate('VillageEditAdresScreen', { AdresData: AdresData });
+  };
+
+  const RemoveAdres = () => {
+    Alert.alert(
+      'Potwierdź',
+      'Czy na pewno chcesz usunąć ten adres?',
+      [
+        {
+          text: 'Tak',
+          onPress: () => {
+            fetch(`http://192.168.1.11:8800/adresses/${AdresData.id}`, {
+              method: 'DELETE'
+            })
+            .then(response => {
+              if (response.ok) {
+                Alert.alert('Adres został usunięty!');
+                navigation.navigate('VillagePropiertieVillageScreen');
+              } else {
+                throw new Error('Błąd podczas usuwania adresu');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Alert.alert('Wystąpił błąd podczas usuwania adresu');
+            });
+          },
+        },
+        {
+          text: 'Nie',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
       <View style={styles.container}>
-        <Text style={styles.title}>{selectedAddress}</Text>
-        <View style={styles.addressContainer}>
-          <Text style={styles.coordinatesText}>{coordinates}</Text>
+        <Text style={styles.title}>Numer domu: {AdresData.HouseNumber}</Text>
+        <View style={styles.detailsContainer}>
+          <View style={styles.detailRow}>
+            <Text style={styles.detailLabel}>Koordynaty:</Text>
+            <Text style={styles.detailValue}>{AdresData.AdressCords}</Text>
+          </View>
         </View>
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteAddress}>
-          <Text style={styles.deleteButtonText}>Usuń</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.backButton} onPress={() => handleBack()}>
-          <Text style={styles.bottomButtonText}>Powrót</Text>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} onPress={GoBack} >
+            <Text style={styles.buttonText}>Powrót</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={GoToEdition}>
+            <Text style={styles.buttonText}>Edytuj</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={RemoveAdres}>
+            <Text style={styles.buttonText}>Usuń</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -54,35 +113,37 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  addressContainer: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 10,
+  detailsContainer: {
+    alignItems: 'center',
     marginBottom: 20,
   },
-  coordinatesText: {
-    fontSize: 16,
-  },
-  deleteButton: {
-    backgroundColor: 'red',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
   },
-  deleteButtonText: {
-    color: '#fff',
+  detailLabel: {
     fontWeight: 'bold',
+    marginRight: 10,
   },
-  backButton: {
+  detailValue: {
+    fontSize: 16,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  button: {
     backgroundColor: '#075eec',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 10,
-    marginBottom: 20,
+    marginLeft: 5
   },
-  bottomButtonText: {
+  buttonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
 });
+

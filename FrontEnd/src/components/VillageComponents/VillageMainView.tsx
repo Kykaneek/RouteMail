@@ -40,7 +40,7 @@ export const VillageMainView = ({ navigation }: { navigation: any }) => {
   };
 
   const AddNewVillage = () => {
-    navigation.navigate('VillageAddViewScreen');
+    navigation.navigate('VillageAddVillageScreen');
   };
 
   const ViewProperties = (village : any) => {

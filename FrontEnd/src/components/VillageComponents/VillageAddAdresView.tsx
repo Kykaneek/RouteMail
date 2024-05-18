@@ -28,7 +28,7 @@ export const VillageAddAdresView = ({ navigation }: { navigation: any }) => {
   };
 
   const handleCancel = () => {
-    // Obsługa cofania akcji
+    navigation.goBack();
   };
 
   return (
