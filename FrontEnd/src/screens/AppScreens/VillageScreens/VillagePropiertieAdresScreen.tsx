@@ -5,8 +5,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type VillagePropiertieAdresScreenProp = StackNavigationProp<{ VillagePA: undefined }>;
 
-const VillagePropiertieAdresScreen = ({ navigation }: { navigation: VillagePropiertieAdresScreenProp  }) => {
-  return < VillagePropiertieAdresView  navigation={navigation} />;
+const VillagePropiertieAdresScreen = ({ navigation, route }: { navigation: VillagePropiertieAdresScreenProp, route: VillagePropiertieAdresScreenProp}) => {
+  return < VillagePropiertieAdresView  navigation={navigation} route={route} />;
 };
 
 export default VillagePropiertieAdresScreen ;

@@ -1,33 +1,36 @@
-import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
 export const VillageAddVillageView = ({ navigation }: { navigation: any }) => {
-  const [villageName, setVillageName] = useState('');
-  const [postCode, setPostCode] = useState('');
+  const [villageName, setVillageName] = useState<any>({
+    Village_Name: '',
+    PostCode: '',
+  });
 
   const handleConfirm = () => {
-    // Wysyłanie danych do API backendu
-    fetch('http://192.168.1.55:8800/villages', {
+    fetch('http://192.168.1.11:8800/villages', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        Village_Name: villageName,
-        PostCode: postCode,
-      }),
+      body: JSON.stringify(villageName)
     })
-      .then(response => {
-        // Handle response
-        if (response.ok) {
-          console.log('Miejscowość pomyślnie dodana!');
-        } else {
-          console.error('Dodanie miejscowości nie powiodło się');
-        }
-      })
-      .catch(error => {
-        console.error('Wystąpił błąd w trakie dodawania miejscowości:', error);
-      });
+    .then(response => {
+      if (response.ok) {
+        Alert.alert('Miejscowość została dodana!');
+        navigation.navigate('VillageMainScreen');
+      } else {
+        throw new Error('Błąd podczas tworzenia miejscowości');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      Alert.alert('Wystąpił błąd podczas tworzenia miejscowości');
+    });
+  };
+
+  const handleInputChange = (key: string, value: string) => {
+    setVillageName({ ...villageName, [key]: value });
   };
 
   const handleCancel = () => {
@@ -40,17 +43,15 @@ export const VillageAddVillageView = ({ navigation }: { navigation: any }) => {
       <View style={styles.container}>
         <Text style={styles.title}>Dodaj nową miejscowość</Text>
         <TextInput
-          style={styles.input}
-          value={villageName}
-          onChangeText={(text) => setVillageName(text)}
-          placeholder="Nazwa miejscowości"
-        />
+            style={styles.input}
+            onChangeText={(text) => handleInputChange('Village_Name', text)}
+            placeholder="Nazwa miejscowoś"
+          />
         <TextInput
-          style={styles.input}
-          value={postCode}
-          onChangeText={(text) => setPostCode(text)}
-          placeholder="Kod pocztowy"
-        />
+            style={styles.input}
+            onChangeText={(text) => handleInputChange('PostCode', text)}
+            placeholder="kod"
+          />
         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
           <Text style={styles.buttonText}>Zatwierdź</Text>
         </TouchableOpacity>
