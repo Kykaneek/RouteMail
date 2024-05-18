@@ -1,5 +1,6 @@
 import db from '../db/db.js';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 //Do testów Kontrolerów i endpointów użyto wtyczki w Visual Studio Code 
 // ThunderClient
@@ -52,6 +53,7 @@ export const updateUser = (req, res) => {
     const values = [Name, SurName, CourierNumber, Role, Email, userId];
     db.query(q, values, (err, result) => { // Wykonaj zapytanie
         if (err) return res.status(500).json(err); // Zwróć komunikat o błędzie 
+        console.log(JSON.stringify(result));
         return res.json(result); // Zwróć wynik zapytania
     });
 };
@@ -92,41 +94,50 @@ export const changePassword = (req, res) => {
   };
 
 
-  export const login =  (req, res) => {
-    const { email, password } = req.body;
-  
-    const query = `SELECT * FROM users WHERE Email = ?`;
-    db.query(query, [email], (err, result) => {
-      if (err) {
-        res.status(500).send('Database error');
-      } else {
-        if (result.length > 0) {
-          const user = result[0];
-          // Check password
-          if (user.Password === password) {
-            res.status(200).send({ message: 'Login successful', user });
-          } else {
-            res.status(401).send({ message: 'Incorrect password' });
-          }
-        } else {
-          res.status(404).send({ message: 'User not found' });
+  export const login = (req, res) => {
+    const Email = req.body.Email;
+    const CourierNumber = req.body.CourierNumber;
+    const Password = req.body.Password;
+    
+
+    let sqlQuery, value;
+    if(Email){
+      sqlQuery = "SELECT * FROM User WHERE Email = ?"
+      value = Email
+    }
+    else if (CourierNumber) {
+      sqlQuery = 'SELECT * FROM user WHERE CourierNumber = ?';
+      value = CourierNumber;
+      console.log(CourierNumber);
+    } 
+    else {
+      return res.status(400).json({ error: 'Brak danych logowania' });
+    }
+
+
+    
+    db.query(sqlQuery, value, (error, results) => {
+        if (error) {
+            console.error('Błąd logowania:', error);
+            return res.status(500).json({ error: 'Błąd logowania użytkownika' });
         }
-      }
+
+        if (results.length === 0) {
+            return res.status(401).json({ error: 'Błędna nazwa użytkownika lub hasło' });
+        }
+  
+        const user = results[0];
+
+        bcrypt.compare(Password, user.Password, (err, isPasswordValid) => {
+            if (err || !isPasswordValid) {
+                return res.status(401).json({ error: 'Błędne hasło' });
+            }
+
+            const token = jwt.sign({ email: user.Email }, 'sekretneHaslo', { expiresIn: '1h' });
+            res.json({ token, message: 'Logowanie powiodło się' });
+        });
     });
-  }
-
-
-async function comparePasswords(password, hashedPassword) {
-  try {
-    const match = await bcrypt.compare(password, hashedPassword); // Porównanie hasła z hashem
-    return match;
-  } catch (error) {
-    console.error('Błąd podczas porównywania haseł: ', error);
-    throw new Error('Błąd podczas porównywania haseł');
-  }
-}
-
-
+};
 
 
 

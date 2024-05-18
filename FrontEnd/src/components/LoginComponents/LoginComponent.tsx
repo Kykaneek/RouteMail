@@ -8,40 +8,68 @@ import {
   TextInput,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginComponent = ({ navigation }: { navigation: any }) => {
   const [form, setForm] = useState({
     Email: '',
     Password: '',
   });
- 
-  
-  const handleSignIn = async () => {
-    console.log(form);
-    try {
-      const response = await fetch('http://192.168.1.130:8800/user/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(form),
-      });
-  
-      if (!response.ok) {
-        console.error('Błąd logowania: ', response.status);
-        return;
-      }
 
-      navigation.navigate('UserViewScreen');
-    } catch (error) {
-      console.error('Błąd logowania: ', error);
+  const handleSignIn = () => {
+    const { Email, Password } = form;
+    let JSONbody, CourierNumber; 
+    const atIndex = Email.indexOf('@');
+    if (atIndex == -1) {
+      CourierNumber = Email;
+      JSONbody = JSON.stringify({ CourierNumber, Password });
+      console.log(JSONbody)
+    } 
+    else {
+      JSONbody = JSON.stringify({ Email, Password });
+      console.log('Tu powinnin isc Email: ' + JSONbody)
+      console.log("Zmiennna jest numerem kuriera");
     }
+
+    
+  
+    fetch('http://192.168.1.130:8800/users/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      
+      body: JSONbody,
+    })
+      .then(response => response.text())
+      .then(async (text) => {
+        try {
+          const data = JSON.parse(text);
+          console.log(data);
+          if (data.token) {
+            try {
+              await AsyncStorage.setItem('token', data.token);
+              navigation.navigate('UserViewScreen');
+            } catch (error) {
+              console.error('Błąd zapisu tokena JWT:', error);
+            }
+          } else {
+            console.error('Brak tokena JWT w odpowiedzi serwera');
+          }
+        } catch (error) {
+          console.error('Błąd parsowania JSON:', error);
+          console.log('Odpowiedź serwera:', text);
+        }
+      })
+      .catch(error => {
+        console.error('Błąd:', error);
+      });
   };
   
   
 
   const PasswordForgotten = () => {
-    navigation.navigate('ConfirmReturnCode');      
+    navigation.navigate('ConfirmReturnCode');
   };
 
   const getAccount = () => {
@@ -62,29 +90,29 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
           <View style={styles.form}>
             <View style={styles.input}>
               <Text style={styles.inputLabel}>Email lub numer kuriera</Text>
-
               <TextInput
                 autoCapitalize="none"
                 autoCorrect={false}
                 keyboardType="email-address"
-                onChangeText={Email => setForm({ ...form, Email })}
+                onChangeText={(Email) => setForm({ ...form, Email })}
                 placeholder="email@email.pl / Numer kuriera"
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
-                value={form.Email} />
+                value={form.Email}
+              />
             </View>
 
             <View style={styles.input}>
               <Text style={styles.inputLabel}>Hasło</Text>
-
               <TextInput
                 autoCorrect={false}
-                onChangeText={Password => setForm({ ...form, Password })}
+                onChangeText={(Password) => setForm({ ...form, Password })}
                 placeholder="********"
                 placeholderTextColor="#6b7280"
                 style={styles.inputControl}
                 secureTextEntry={true}
-                value={form.Password} />
+                value={form.Password}
+              />
             </View>
 
             <View style={styles.formAction}>
@@ -95,7 +123,6 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
               </TouchableOpacity>
             </View>
 
-            
             <TouchableOpacity onPress={PasswordForgotten} style={{ marginTop: 'auto', marginBottom: 10 }}>
               <Text style={styles.formLink}>Zapomniałem hasła</Text>
             </TouchableOpacity>
@@ -105,7 +132,6 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
-
       </View>
     </SafeAreaView>
   );
@@ -130,7 +156,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#929292',
   },
-  /** Header */
   header: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -142,7 +167,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 36,
   },
-  /** Form */
   form: {
     marginBottom: 24,
     paddingHorizontal: 24,
@@ -159,7 +183,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#075eec',
     textAlign: 'center',
-    textDecorationLine: 'underline' // Dodaj ten styl
+    textDecorationLine: 'underline',
   },
   formFooter: {
     fontSize: 15,
@@ -167,10 +191,8 @@ const styles = StyleSheet.create({
     color: '#222',
     textAlign: 'center',
     letterSpacing: 0.15,
-    textDecorationLine: 'underline' // Dodaj ten styl
+    textDecorationLine: 'underline',
   },
-  
-  /** Input */
   input: {
     marginBottom: 16,
   },
@@ -192,7 +214,6 @@ const styles = StyleSheet.create({
     borderColor: '#C9D3DB',
     borderStyle: 'solid',
   },
-  /** Button */
   btn: {
     flexDirection: 'row',
     alignItems: 'center',

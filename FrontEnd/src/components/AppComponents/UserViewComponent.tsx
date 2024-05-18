@@ -1,5 +1,8 @@
 import React from 'react';
 import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
 export const UserViewComponent = ({ navigation }: { navigation: any }) => {
 
   const GoToOrders = () => {
@@ -20,6 +23,15 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
   const GoToVillage = () => {
     navigation.navigate('VillageMainScreen')
   }
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('token');
+       navigation.navigate('LoginScreen');
+    } catch (error) {
+      console.error('Błąd podczas wylogowywania:', error);
+    }
+  };
 
   return (
     <View style={styles.outerContainer}>
@@ -74,7 +86,7 @@ export const UserViewComponent = ({ navigation }: { navigation: any }) => {
       </View>
       <View style={styles.buttonsContainer}>
         <View style={styles.buttonsInnerContainer}>
-          <TouchableOpacity style={styles.button} >
+          <TouchableOpacity style={styles.button} onPress={logout}>
             <Text style={styles.buttonText}>Wyloguj</Text>
           </TouchableOpacity>
         </View>
