@@ -9,7 +9,7 @@ import {
   Image,
   Alert
 } from 'react-native';
-
+import { createUser } from '../../../services/AppServices/usersServices';
 
 export const UserAddComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({
@@ -26,27 +26,18 @@ export const UserAddComponent = ({ navigation, route }: { navigation: any, route
     }
   }, [route]);
 
-  const createUser = () => {
-    fetch('http://192.168.1.130:8800/users', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    })
-    .then(response => {
-      if (response.ok) {
+  const create_User = async () => {
+    try {
+      const success = await createUser(userData);
+      if (success) {
         Alert.alert('Użytkownik został dodany!');
         navigation.navigate('UserMainListScreen');
-      } else {
-        throw new Error('Błąd podczas tworzenia użytkownika');
       }
-    })
-    .catch(error => {
-      console.error(error);
+    } catch (error) {
       Alert.alert('Wystąpił błąd podczas tworzenia użytkownika');
-    });
+    }
   };
+  
 
   const handleInputChange = (key: string, value: string) => {
     setUserData({ ...userData, [key]: value });
@@ -105,7 +96,7 @@ export const UserAddComponent = ({ navigation, route }: { navigation: any, route
 
         {/* Bottom Buttons */}
         <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.bottomButton} onPress={createUser}>
+          <TouchableOpacity style={styles.bottomButton} onPress={create_User}>
             <Text style={styles.bottomButtonText}>Utwórz użytkownika</Text>
           </TouchableOpacity>
         </View>

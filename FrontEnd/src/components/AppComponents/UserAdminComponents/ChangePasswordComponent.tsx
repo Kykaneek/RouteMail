@@ -8,6 +8,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
+import { changePasswordService } from '../../../services/AppServices/usersServices';
 
 export const ChangePasswordComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
@@ -28,11 +29,22 @@ export const ChangePasswordComponent = ({ navigation, route }: { navigation: any
     navigation.navigate('UserPropertiesScreen');
   };
 
-  const changePassword = () => {
+  const changePassword = async () => {
     if (form.password !== form.confirmPassword) {
       Alert.alert("Błąd", "Nowe hasło i potwierdzenie hasła nie zgadzają się.");
       return;
     }
+
+    try {
+      const responseData = await changePasswordService(userData.id, form.password);
+      console.log(responseData);
+      Alert.alert("Sukces", "Hasło zostało pomyślnie zmienione.");
+    } catch (error) {
+      console.error(error);
+      Alert.alert("Błąd", "Wystąpił błąd podczas zmiany hasła.");
+    }
+  
+
 
     // Przygotuj dane do wysłania na serwer
     const data = {

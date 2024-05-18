@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, TextInput, Image, Alert, ScrollView, RefreshControl } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // Import hooka useFocusEffect
+import { removeUser } from '../../../services/AppServices/usersServices';
 
 const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
@@ -35,29 +36,23 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
     navigation.navigate('UserMainListScreen');
   };
 
-  const RemoveUser = () => {
+  const RemoveUser = async () => {
     Alert.alert(
       'Potwierdź',
       'Czy na pewno chcesz usunąć tego użytkownika?',
       [
         {
           text: 'Tak',
-          onPress: () => {
-            fetch(`http://192.168.1.130:8800/users/${userData.id}`, {
-              method: 'DELETE'
-            })
-            .then(response => {
-              if (response.ok) {
+          onPress: async () => {
+            try {
+              const success = await removeUser(userData.id);
+              if (success) {
                 Alert.alert('Użytkownik został usunięty!');
                 navigation.navigate('UserMainListScreen');
-              } else {
-                throw new Error('Błąd podczas usuwania użytkownika');
               }
-            })
-            .catch(error => {
-              console.error(error);
+            } catch (error) {
               Alert.alert('Wystąpił błąd podczas usuwania użytkownika');
-            });
+            }
           },
         },
         {
@@ -68,6 +63,7 @@ const UserPropertiesComponent = ({ navigation, route }: { navigation: any, route
       { cancelable: false }
     );
   };
+  
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

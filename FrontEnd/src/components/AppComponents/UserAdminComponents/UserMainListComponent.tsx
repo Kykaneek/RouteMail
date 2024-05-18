@@ -4,38 +4,40 @@ import {
   SafeAreaView,
   View,
   Text,
-  TouchableOpacity,
-  TextInput,
-  Image,
+  TouchableOpacity
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'; // Import hooka useFocusEffect
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { fetchUsers } from '../../../services/AppServices/usersServices';
 
 export const UserMainListComponent = ({ navigation }: { navigation: any }) => {
   const [users, setUsers] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsersData();
   }, []);
 
-  // Wywołaj funkcję fetchUsers za każdym razem, gdy ekran uzyska fokus nawigacji
+  
   useFocusEffect(
     React.useCallback(() => {
-      fetchUsers();
+      fetchUsersData();
     }, [])
   );
 
-  const fetchUsers = () => {
-    // Pobranie danych użytkowników z backendu
-    fetch('http://192.168.1.130:8800/users')
-      .then(response => response.json())
-      .then(data => {
-        setUsers(data);
-      })
-      .catch(error => {
-        console.error('Error fetching users:', error);
-      });
+  const fetchUsersData = async () => {
+    try {
+      const usersData = await fetchUsers();
+      setUsers(usersData);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Wystąpił nieznany błąd");
+      }
+    }
   };
+  
+  
 
   const GoBack = () => {
     navigation.navigate('UserViewScreen');

@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { handleSignIn } from '../../../services/LoginServices/authservice';
 
 const LoginComponent = ({ navigation }: { navigation: any }) => {
   const [form, setForm] = useState({
@@ -16,57 +16,9 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
     Password: '',
   });
 
-  const handleSignIn = () => {
-    const { Email, Password } = form;
-    let JSONbody, CourierNumber; 
-    const atIndex = Email.indexOf('@');
-    if (atIndex == -1) {
-      CourierNumber = Email;
-      JSONbody = JSON.stringify({ CourierNumber, Password });
-      console.log(JSONbody)
-    } 
-    else {
-      JSONbody = JSON.stringify({ Email, Password });
-      console.log('Tu powinnin isc Email: ' + JSONbody)
-      console.log("Zmiennna jest numerem kuriera");
-    }
-
-    
-  
-    fetch('http://192.168.1.130:8800/users/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      
-      body: JSONbody,
-    })
-      .then(response => response.text())
-      .then(async (text) => {
-        try {
-          const data = JSON.parse(text);
-          console.log(data);
-          if (data.token) {
-            try {
-              await AsyncStorage.setItem('token', data.token);
-              navigation.navigate('UserViewScreen');
-            } catch (error) {
-              console.error('Błąd zapisu tokena JWT:', error);
-            }
-          } else {
-            console.error('Brak tokena JWT w odpowiedzi serwera');
-          }
-        } catch (error) {
-          console.error('Błąd parsowania JSON:', error);
-          console.log('Odpowiedź serwera:', text);
-        }
-      })
-      .catch(error => {
-        console.error('Błąd:', error);
-      });
+  const Login = () => {
+    handleSignIn(form, navigation);  // Użycie zaimportowanej funkcji
   };
-  
-  
 
   const PasswordForgotten = () => {
     navigation.navigate('ConfirmReturnCode');
@@ -116,7 +68,7 @@ const LoginComponent = ({ navigation }: { navigation: any }) => {
             </View>
 
             <View style={styles.formAction}>
-              <TouchableOpacity onPress={handleSignIn}>
+              <TouchableOpacity onPress={Login}>
                 <View style={styles.btn}>
                   <Text style={styles.btnText}>Zaloguj się</Text>
                 </View>

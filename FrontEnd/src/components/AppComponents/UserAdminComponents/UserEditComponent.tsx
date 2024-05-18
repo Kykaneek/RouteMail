@@ -11,6 +11,8 @@ import {
   ScrollView,
   RefreshControl
 } from 'react-native';
+import { updateUser } from '../../../services/AppServices/usersServices';
+
 
 export const UserEditComponent = ({ navigation, route }: { navigation: any, route: any }) => {
   const [userData, setUserData] = useState<any>({});
@@ -23,28 +25,19 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
     }
   }, [route]);
 
-  const updateUser = () => {
-    fetch(`http://192.168.1.130:8800/users/${userData.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(userData)
-    })
-    .then(response => {
-      if (response.ok) {
+  //Aktualizuj usera
+  const update_User = async () => {
+    try {
+      const success = await updateUser(userData);
+      if (success) {
         Alert.alert('Dane użytkownika zostały zaktualizowane!');
-        console.log('Test pomyślnie zdany');
         handleRefresh();
-      } else {
-        throw new Error('Błąd podczas aktualizacji danych użytkownika');
       }
-    })
-    .catch(error => {
-      console.error(error);
+    } catch (error) {
       Alert.alert('Wystąpił błąd podczas aktualizacji danych użytkownika');
-    });
+    }
   };
+
 
   const handleInputChange = (key: string, value: string) => {
     setUserData({ ...userData, [key]: value });
@@ -57,12 +50,14 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
 
   const handleRefresh = useCallback(() => {
     setRefreshing(true);
-    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
     setTimeout(() => {
-      setRefreshing(false); // Zakończ proces odświeżania
-      navigation.navigate('UserPropertiesScreen'); // Nawiguj do ekranu szczegółów użytkownika
+      setRefreshing(false); 
+      navigation.navigate('UserPropertiesScreen'); 
     }, 1000);
   }, []);
+
+
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
       <ScrollView
@@ -125,7 +120,7 @@ export const UserEditComponent = ({ navigation, route }: { navigation: any, rout
 
           {/* Bottom Buttons */}
           <View style={styles.bottomContainer}>
-            <TouchableOpacity style={styles.bottomButton} onPress={updateUser}>
+            <TouchableOpacity style={styles.bottomButton} onPress={update_User}>
               <Text style={styles.bottomButtonText}>Potwierdź</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.bottomButton} onPress={BackToPageTwo}>
