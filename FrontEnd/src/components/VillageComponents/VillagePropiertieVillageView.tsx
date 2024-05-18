@@ -20,7 +20,7 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
   );
 
   const fetchadresses = () => {
-    // Pobranie danych miejscowości z backendu
+    // Pobranie danych adresów z backendu
     fetch('http://192.168.1.11:8800/adresses')
       .then(response => response.json())
       .then(data => {
@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    marginTop: 10,
   },
   scrollViewContent: {
     padding: 20,
@@ -173,6 +174,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    paddingBottom: 40,
   },
   button: {
     backgroundColor: '#075eec',
