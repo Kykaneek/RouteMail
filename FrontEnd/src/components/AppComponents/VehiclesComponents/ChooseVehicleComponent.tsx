@@ -9,9 +9,19 @@ import {
   Alert,
 } from 'react-native';
 
+interface Vehicle {
+  id: number;
+  Name: string;
+  Model: string;
+  inUse: number | null;
+  courierNumber?: string;
+  courierFirstName?: string;
+  courierLastName?: string;
+}
+
 export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
-  const [vechicles, setVehicles] = useState<any[]>([]);
-  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle | null>(null);
   const [userId, setUserId] = useState(123); // Id aktualnego użytkownika, do zmiany
 
   useEffect(() => {
@@ -23,29 +33,26 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
   };
 
   const fetchVehicles = () => {
-    // Pobranie danych użytkowników z backendu
-    fetch('http://192.168.1.11:8800/vechicles')
-      .then(response => response.json())
+    fetch('http://192.168.1.55:8800/vehicles')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
       .then(data => {
         setVehicles(data);
       })
       .catch(error => {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching vehicles:', error);
+        Alert.alert('Error', 'There was an issue fetching the vehicle data.');
       });
   };
 
-/** 
-  useEffect(() => {
-    fetch('http://192.168.1.11:8088/vehicles')
-      .then(response => response.json())
-      .then(data => setVehicles(data))
-      .catch(error => console.error('Błąd:', error));
-  }, []);
-
-  const handleSelectVehicle = (vechicles) => {
-    if (vechicles.inUse !== null) {
+  const handleSelectVehicle = (vehicle: Vehicle) => {
+    if (vehicle.inUse !== null) {
       Alert.alert('Pojazd jest zajęty', 'Wybierz inny pojazd.');
-    } else if (selectedVehicle && selectedVehicle.id !== vechicles.id) {
+    } else if (selectedVehicle && selectedVehicle.id !== vehicle.id) {
       Alert.alert('Jesteś już przypisany do innego pojazdu', 'Zwolnij aktualny pojazd przed wyborem nowego.');
     } else {
       Alert.alert(
@@ -60,31 +67,36 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
           {
             text: 'Tak',
             onPress: () => {
-              fetch(`http://192.168.1.11:8088/vehicles/${vechicle.id}`, {
+              fetch(`http://192.168.1.55:8088/vehicles/${vehicle.id}`, {
                 method: 'PUT',
                 headers: {
                   'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ inUse: userId }),
               })
-                .then(response => response.json())
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                  }
+                  return response.json();
+                })
                 .then(() => {
-                  setSelectedVehicle(vechicle);
+                  setSelectedVehicle(vehicle);
                   setVehicles(prevVehicles =>
                     prevVehicles.map(v =>
-                      v.id === vechicle.id ? { ...v, inUse: userId } : v
+                      v.id === vehicle.id ? { ...v, inUse: userId } : v
                     )
                   );
                 })
-                .catch(error => console.error('Błąd:', error));
+                .catch(error => console.error('Error:', error));
             },
           },
         ]
       );
     }
   };
-  /**
-  const handleReleaseVehicle = () => {
+
+  const handleReleaseVehicle = (vehicle: Vehicle) => {
     Alert.alert(
       'Czy na pewno chcesz zwolnić pojazd?',
       '',
@@ -97,43 +109,48 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
         {
           text: 'Tak',
           onPress: () => {
-            fetch(`http://192.168.1.11:8088/vehicles/${selectedVehicle.id}`, {
+            fetch(`http://192.168.1.55:8088/vehicles/${vehicle.id}`, {
               method: 'PUT',
               headers: {
                 'Content-Type': 'application/json',
               },
               body: JSON.stringify({ inUse: null }),
             })
-              .then(response => response.json())
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+              })
               .then(() => {
                 setSelectedVehicle(null);
                 setVehicles(prevVehicles =>
                   prevVehicles.map(v =>
-                    v.id === selectedVehicle.id ? { ...v, inUse: null } : v
+                    v.id === vehicle.id ? { ...v, inUse: null } : v
                   )
                 );
               })
-              .catch(error => console.error('Błąd:', error));
+              .catch(error => console.error('Error:', error));
           },
         },
       ]
     );
   };
-**/
+
   return (
-    
     <SafeAreaView style={styles.container}>
       <View style={styles.topButtons}>
-          <TouchableOpacity style={styles.topButton}>
-            <Text style={styles.topButtonText} onPress={GoBack}>Powrót</Text>
-          </TouchableOpacity>
-          </View>
+        <TouchableOpacity style={styles.topButton}>
+          <Text style={styles.topButtonText} onPress={GoBack}>Powrót</Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {vechicles.map(vehicle => (
+        {vehicles.map(vehicle => (
           <TouchableOpacity
             key={vehicle.id}
             style={[styles.vehicleBlock]}
-           >
+            onPress={() => handleSelectVehicle(vehicle)}
+          >
             <View>
               <Text style={styles.vehicleBrand}>{vehicle.Name}</Text>
               <Text style={styles.vehicleModel}>{vehicle.Model}</Text>
@@ -146,7 +163,7 @@ export const ChooseVehicleComponent = ({ navigation }: { navigation: any }) => {
             </View>
             {vehicle.inUse !== null ? (
               <View style={styles.courierInfo}>
-                <TouchableOpacity >
+                <TouchableOpacity onPress={() => handleReleaseVehicle(vehicle)}>
                   <Text style={styles.releaseBtn}>Zwolnij pojazd</Text>
                 </TouchableOpacity>
               </View>
@@ -177,6 +194,9 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 25,
     borderRadius: 10,
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   topButtonText: {
     color: '#fff',
@@ -215,4 +235,4 @@ const styles = StyleSheet.create({
     color: 'blue',
     marginTop: 5,
   },
-});
+})

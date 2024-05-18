@@ -1,5 +1,5 @@
 import React from 'react';
-import { VehicleView } from '../../../components/VehiclesComponents/VehicleMainComponent';
+import { VehicleView } from '../../../components/AppComponents/VehiclesComponents/VehicleMainComponent';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 

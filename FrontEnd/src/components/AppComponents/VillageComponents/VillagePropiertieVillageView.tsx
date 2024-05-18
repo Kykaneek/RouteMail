@@ -1,58 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView,} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
-export const VillagePropiertieVillageView = ({ navigation }: { navigation: any }) => {
-  const [addresses, setAddresses] = useState([]);
-  
-  // Funkcja fetchAddresses pobiera dane o adresach związanych z daną miejscowością z serwera
-  const fetchAddresses = async () => {
-    try {
-      // Pobieranie danych z serwera na podstawie wybranej miejscowości
-      const data = await fetchAddressesFromServer(selectedLocation);
-      // Ustawienie danych adresów w stanie
-      setAddresses(data);
-    } catch (error) {
-      console.error('Błąd podczas pobierania danych adresów:', error);
-    }
-  };
 
-  // Pobranie danych adresów po zamontowaniu komponentu
+export const VillagePropiertieVillageView = ({ navigation, route}: { navigation: any, route: any}) => {
+  const [VillageData, setVillage] = useState<any>({});
+  const [adresses, setAdres] = useState<any[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
-    fetchAddresses();
+    FetchVillageData();
+    fetchadresses();
   }, []);
 
-  const handleBack = () => {
-    // Obsługa powrotu do poprzedniego ekranu
+  useFocusEffect(
+    useCallback(() => {
+      FetchVillageData();
+      fetchadresses();
+    }, [])
+  );
+
+  const fetchadresses = () => {
+    // Pobranie danych adresów z backendu
+    fetch('http://192.168.1.11:8800/adresses')
+      .then(response => response.json())
+      .then(data => {
+        setAdres(data);
+      })
+      .catch(error => {
+        console.error('Error fetching adresses:', error);
+      });
+  };
+/** 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
+    setTimeout(() => {
+      FetchVillageData();
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+*/
+  const FetchVillageData = () => {
+    const { VillageData } = route.params;
+    setVillage(VillageData);
+  };
+  
+
+  const GoBack = () => {
+    navigation.navigate('VillageMainScreen');
   };
 
-  const handleAddAddress = () => {
-    // Obsługa dodawania nowego adresu
+  const GoToEdition = () => {
+    navigation.navigate('VillageEditVillageScreen', { VillageData: VillageData });
   };
 
-  const handleDeleteAddress = (addressId) => {
-    // Obsługa usuwania adresu
+  const ViewProperties = (adresses : any) => {
+    navigation.navigate('VillagePropiertieAdresScreen', { AdresData: adresses });
   };
+
+  const RemoveVillage = () => {
+    Alert.alert(
+      'Potwierdź',
+      'Czy na pewno chcesz usunąć ten miejscowość?',
+      [
+        {
+          text: 'Tak',
+          onPress: () => {
+            fetch(`http://192.168.1.11:8800/villages/${VillageData.id}`, {
+              method: 'DELETE'
+            })
+            .then(response => {
+              if (response.ok) {
+                Alert.alert('Miejscowość została usunięty!');
+                navigation.navigate('VillageMainScreen');
+              } else {
+                throw new Error('Błąd podczas usuwania miejscowości');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Alert.alert('Wystąpił błąd podczas usuwania miejscowości');
+            });
+          },
+        },
+        {
+          text: 'Nie',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+
+
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
       <View style={styles.container}>
-        <Text style={styles.title}>{selectedLocation}</Text>
-        <ScrollView contentContainerStyle={styles.addressesContainer}>
-          {addresses.map((address, index) => (
-            <View key={index} style={styles.addressCard}>
-              <Text style={styles.addressText}>{address}</Text>
-              <TouchableOpacity style={styles.deleteButton} onPress={() => handleDeleteAddress(address.id)}>
-                <Text style={styles.deleteButtonText}>Usuń</Text>
-              </TouchableOpacity>
+        <Text style={styles.title}>{VillageData.Village_Name}</Text>
+        <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {adresses.map((adresses, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => ViewProperties(adresses)}
+            style={[styles.AdresBlock]}
+           >
+            <View>
+              <Text style={styles.adressnumber}>{adresses.HouseNumber}</Text>
             </View>
-          ))}
-        </ScrollView>
-        <View style={styles.bottomButtonsContainer}>
-          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-            <Text style={styles.bottomButtonText}>Powrót</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.addButton} onPress={handleAddAddress}>
-            <Text style={styles.bottomButtonText}>Dodaj</Text>
+        ))}
+      </ScrollView>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.button} onPress={GoBack} >
+            <Text style={styles.buttonText}>Powrót</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={GoToEdition}>
+            <Text style={styles.buttonText}>Edytuj</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={RemoveVillage}>
+            <Text style={styles.buttonText}>Usuń</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -70,66 +138,54 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    marginTop: 10,
   },
-  addressesContainer: {
-    flexGrow: 1,
-    alignItems: 'center',
-    marginTop: 20,
+  scrollViewContent: {
+    padding: 20,
   },
-  addressCard: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  AdresBlock: {
     backgroundColor: '#fff',
-    padding: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-    width: '90%',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
   },
-  addressText: {
+  detailsContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  adressnumber: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  detailLabel: {
+    fontWeight: 'bold',
+    marginRight: 10,
+  },
+  detailValue: {
     fontSize: 16,
   },
-  deleteButton: {
-    backgroundColor: 'red',
-    padding: 10,
-    borderRadius: 5,
-  },
-  deleteButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  bottomButtonsContainer: {
+  buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingBottom: 40,
   },
-  backButton: {
+  button: {
     backgroundColor: '#075eec',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 40,
     borderRadius: 10,
-    width: '30%',
-    marginTop: -30,
+    marginLeft: 5
   },
-  addButton: {
-    backgroundColor: '#075eec',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    width: '30%',
-  },
-  bottomButtonText: {
+  buttonText: {
     color: '#fff',
     fontWeight: 'bold',
-    textAlign: 'center',
   },
 });
+

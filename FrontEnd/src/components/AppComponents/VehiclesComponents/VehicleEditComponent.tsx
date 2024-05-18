@@ -1,33 +1,76 @@
-import React, { useState } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback} from 'react';
+import { StyleSheet, SafeAreaView, View, RefreshControl, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
 
-interface Props {
-  navigation: any;
-  vehicleName: string;
-  initialBrand: string;
-  initialModel: string;
-  onSave: (brand: string, model: string) => void;
-}
 
-export const VehicleEdit = ({ navigation, vehicleName, initialBrand, initialModel, onSave}: Props) => {
-  const [brand, setBrand] = useState(initialBrand);
-  const [model, setModel] = useState(initialModel);
+export const VehicleEdit = ({ navigation, route}: { navigation: any, route: any}) => {
+  const [VehicleData, setVehicleData] = useState<any>({});
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    console.log(route.params);
+    if (route && route.params) {
+      const { VehicleData } = route.params;
+      setVehicleData(VehicleData);
+    }
+  }, [route]);
 
   const GoBack = () => {
     navigation.navigate('VehiclePropiertisViewScreen');
   };
 
+  const FetchVehicleData = () => {
+    const { VehicleData } = route.params;
+    setVehicleData(VehicleData);
+    
+  };
+
+  const updateVehicle = () => {
+    fetch(`http://192.168.1.11:8800/vechicles/${VehicleData.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(VehicleData)
+    })
+    .then(response => {
+      if (response.ok) {
+        Alert.alert('Dane pojazdu zostały zaktualizowane!');
+        console.log('Test pomyślnie zdany');
+        handleRefresh();
+      } else {
+        throw new Error('Błąd podczas aktualizacji danych pojazdu');
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      Alert.alert('Wystąpił błąd podczas aktualizacji danych pojazdu');
+    });
+  };
+
+  const handleInputChange = (key: string, value: string) => {
+    setVehicleData({ ...VehicleData, [key]: value });
+  };
+
+  const handleRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
+    setTimeout(() => {
+      setRefreshing(false); // Zakończ proces odświeżania
+      navigation.navigate('VehiclePropiertisViewScreen'); // Nawiguj do ekranu szczegółów użytkownika
+    }, 1000);
+  }, []);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
       <View style={styles.container}>
-        <Text style={styles.title}>{vehicleName}</Text>
         <View style={styles.inputContainer}>
           <Text style={styles.inputLabel}>Marka:</Text>
           <TextInput
             style={styles.inputControl}
-            value={brand}
-            onChangeText={setBrand}
             placeholder="Wprowadź markę"
+            value={VehicleData.Name}
+            onChangeText={(text) => handleInputChange('Name', text)}
+            
           />
           
             
@@ -36,13 +79,13 @@ export const VehicleEdit = ({ navigation, vehicleName, initialBrand, initialMode
           <Text style={styles.inputLabel}>Model:</Text>
           <TextInput
             style={styles.inputControl}
-            value={model}
-            onChangeText={setModel}
+            value={VehicleData.Model}
+            onChangeText={(text) => handleInputChange('Model', text)}
             placeholder="Wprowadź model"
           />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={() => onSave(brand, model)}>
+          <TouchableOpacity style={[styles.button, styles.confirmButton]} onPress={updateVehicle} >
             <Text style={styles.buttonText}>Zatwierdź</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.cancelButton]} onPress={GoBack}>

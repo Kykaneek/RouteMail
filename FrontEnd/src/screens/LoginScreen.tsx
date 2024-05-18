@@ -1,5 +1,5 @@
 import React from 'react';
-import LoginComponent from '../components/LoginComponents/LoginComponent';
+import LoginComponent from '../components/AppComponents/LoginComponents/LoginComponent';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 

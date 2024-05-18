@@ -1,5 +1,5 @@
 import React from 'react';
-import ConfirmPasswordCode from '../../components/LoginComponents/ReturnPassword/ConfirmPasswordCodeComponent';
+import ConfirmPasswordCode from '../../components/AppComponents/LoginComponents/ReturnPassword/ConfirmPassword';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 

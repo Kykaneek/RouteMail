@@ -1,5 +1,5 @@
 import React from 'react';
-import { VillageAddVillageView } from '../../../components/VillageComponents/VillageAddVillageView';
+import { VillageAddVillageView } from '../../../components/AppComponents/VillageComponents/VillageAddVillageView';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 

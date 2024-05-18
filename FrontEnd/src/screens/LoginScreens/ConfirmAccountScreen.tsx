@@ -1,5 +1,5 @@
 import React from 'react';
-import ConfirmAccountComponent from '../../components/LoginComponents/ConfirmAccount/ConfirmAccountComponent';
+import ConfirmAccountComponent from '../../components/AppComponents/LoginComponents/ConfirmAccount/ConfirmCodeComponent';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 

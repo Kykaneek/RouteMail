@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   StyleSheet,
   SafeAreaView,
@@ -16,25 +17,34 @@ export const VehicleView = ({ navigation }: { navigation: any }) => {
     fetchVehicles();
   }, []);
 
-  const GoBack = () => {
-    navigation.navigate('UserViewScreen');
-  };
-
-  const ViewProperties = () => {
-    navigation.navigate('VehiclePropiertisViewScreen');
-  };
-  
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchVehicles();
+    }, [])
+  );
 
   const fetchVehicles = () => {
-    // Pobranie danych użytkowników z backendu
+    // Pobranie danych pojazdów z backendu
     fetch('http://192.168.1.11:8800/vechicles')
       .then(response => response.json())
       .then(data => {
         setVehicles(data);
       })
       .catch(error => {
-        console.error('Error fetching users:', error);
+        console.error('Error fetching vehicles:', error);
       });
+  };
+
+  const GoBack = () => {
+    navigation.navigate('UserViewScreen');
+  };
+
+  const AddNewVehicle = () => {
+    navigation.navigate('VehicleAddViewScreen');
+  };
+
+  const ViewProperties = (vechicles : any) => {
+    navigation.navigate('VehiclePropiertisViewScreen', { VehicleData: vechicles });
   };
 
 
@@ -45,15 +55,15 @@ export const VehicleView = ({ navigation }: { navigation: any }) => {
           <TouchableOpacity style={styles.topButton}>
             <Text style={styles.topButtonText} onPress={GoBack}>Powrót</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.topButton}>
+          <TouchableOpacity style={styles.topButton} onPress={AddNewVehicle}>
             <Text style={styles.topButtonText}>Dodaj</Text>
           </TouchableOpacity>
           </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {vechicles.map(vehicle => (
+        {vechicles.map((vehicle, index) => (
           <TouchableOpacity
-            key={vehicle.id}
-            onPress={ViewProperties}
+            key={index}
+            onPress={() => ViewProperties(vehicle)}
             style={[styles.vehicleBlock]}
            >
             <View>

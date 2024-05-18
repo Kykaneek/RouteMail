@@ -1,19 +1,77 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 
 
+export const VehiclePropiertisViewComponent = ({ navigation, route}: { navigation: any, route: any}) => {
+  const [VehicleData, setVehicle] = useState<any>({});
+  const [refreshing, setRefreshing] = useState(false);
+  useEffect(() => {
+    FetchVehicleData();
+  }, []);
 
-export const VehiclePropiertisViewComponent = ({ navigation }: { navigation: any}) => {
- 
+  useFocusEffect(
+    useCallback(() => {
+      FetchVehicleData();
+    }, [])
+  );
+/** 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    // Symulacja opóźnienia pobierania danych, można zastąpić rzeczywistym pobieraniem danych
+    setTimeout(() => {
+      FetchVehicleData();
+      setRefreshing(false);
+    }, 1000);
+  }, []);
+*/
+  const FetchVehicleData = () => {
+    const { VehicleData } = route.params;
+    setVehicle(VehicleData);
+  };
+  
+
   const GoBack = () => {
     navigation.navigate('VehicleViewScreen');
   };
 
   const GoToEdition = () => {
-    navigation.navigate('VehicleEditViewScreen');
+    navigation.navigate('VehicleEditViewScreen', { VehicleData: VehicleData });
   };
 
-
+  const RemoveVehicle = () => {
+    Alert.alert(
+      'Potwierdź',
+      'Czy na pewno chcesz usunąć ten pojazd?',
+      [
+        {
+          text: 'Tak',
+          onPress: () => {
+            fetch(`http://192.168.1.11:8800/vechicles/${VehicleData.id}`, {
+              method: 'DELETE'
+            })
+            .then(response => {
+              if (response.ok) {
+                Alert.alert('Pojazd został usunięty!');
+                navigation.navigate('VehicleViewScreen');
+              } else {
+                throw new Error('Błąd podczas usuwania pojazdu');
+              }
+            })
+            .catch(error => {
+              console.error(error);
+              Alert.alert('Wystąpił błąd podczas usuwania pojazdu');
+            });
+          },
+        },
+        {
+          text: 'Nie',
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
 
 
@@ -25,11 +83,11 @@ export const VehiclePropiertisViewComponent = ({ navigation }: { navigation: any
         <View style={styles.detailsContainer}>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Marka:</Text>
-            <Text style={styles.detailValue}>X</Text>
+            <Text style={styles.detailValue}>{VehicleData.Name}</Text>
           </View>
           <View style={styles.detailRow}>
             <Text style={styles.detailLabel}>Model:</Text>
-            <Text style={styles.detailValue}>Y</Text>
+            <Text style={styles.detailValue}>{VehicleData.Model}</Text>
           </View>
         </View>
         <View style={styles.buttonRow}>
@@ -39,7 +97,7 @@ export const VehiclePropiertisViewComponent = ({ navigation }: { navigation: any
           <TouchableOpacity style={styles.button} onPress={GoToEdition}>
             <Text style={styles.buttonText}>Edytuj</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} >
+          <TouchableOpacity style={styles.button} onPress={RemoveVehicle}>
             <Text style={styles.buttonText}>Usuń</Text>
           </TouchableOpacity>
         </View>

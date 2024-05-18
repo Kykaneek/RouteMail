@@ -1,58 +1,80 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  StyleSheet,
+  SafeAreaView,
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 
 export const VillageMainView = ({ navigation }: { navigation: any }) => {
-  const [locations, setLocations] = useState([]);
+  const [village, setVillage] = useState<any[]>([]);
 
-  // Funkcja fetchLocations pobiera dane o miejscowościach z serwera
-  const fetchLocations = async () => {
-    try {
-      // Pobieranie danych z serwera
-      const data = await fetchLocationsFromServer();
-      // Ustawienie danych miejscowości w stanie
-      setLocations(data);
-    } catch (error) {
-      console.error('Błąd podczas pobierania danych miejscowości:', error);
-    }
-  };
-
-  // Pobranie danych miejscowości z serwera po zamontowaniu komponentu
   useEffect(() => {
-    fetchLocations();
+    fetchvillages();
   }, []);
 
-  const handleBack = () => {
-    // Obsługa powrotu do poprzedniego ekranu
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchvillages();
+    }, [])
+  );
+
+  const fetchvillages = () => {
+    // Pobranie danych miejscowości z backendu
+    fetch('http://192.168.1.11:8800/villages')
+      .then(response => response.json())
+      .then(data => {
+        setVillage(data);
+      })
+      .catch(error => {
+        console.error('Error fetching village:', error);
+      });
   };
 
-  const handleAddLocation = () => {
-    // Obsługa dodawania nowej miejscowości
+  const GoBack = () => {
+    navigation.navigate('UserViewScreen');
   };
+
+  const AddNewVillage = () => {
+    navigation.navigate('VillageAddVillageScreen');
+  };
+
+  const ViewProperties = (village : any) => {
+    navigation.navigate('VillagePropiertieVillageScreen', { VillageData: village });
+  };
+
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#e8ecf4' }}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Miejscowości</Text>
-        <ScrollView contentContainerStyle={styles.locationButtonsContainer}>
-          {locations.map((location, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.locationButton}
-              onPress={() => handleLocationSelect(location)}
-            >
-              <Text style={styles.locationButtonText}>{location.name}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <View style={styles.bottomButtonsContainer}>
-          <TouchableOpacity style={styles.bottomButton} onPress={handleBack}>
-            <Text style={styles.bottomButtonText}>Powrót</Text>
+    
+    <SafeAreaView style={styles.container}>
+      <View style={styles.topButtons}>
+          <TouchableOpacity style={styles.topButton}>
+            <Text style={styles.topButtonText} onPress={GoBack}>Powrót</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.bottomButton} onPress={handleAddLocation}>
-            <Text style={styles.bottomButtonText}>Dodaj</Text>
+          <TouchableOpacity style={styles.topButton} onPress={AddNewVillage}>
+            <Text style={styles.topButtonText}>Dodaj</Text>
           </TouchableOpacity>
-        </View>
-      </View>
+          </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        {village.map((village, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => ViewProperties(village)}
+            style={[styles.villageBlock]}
+           >
+            <View>
+              <Text style={styles.villageName}>{village.Village_Name}</Text>
+              <Text style={styles.villagePost}>{village.PostCode}</Text>
+  
+            
+            </View>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -60,47 +82,56 @@ export const VillageMainView = ({ navigation }: { navigation: any }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#e8ecf4',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  locationButtonsContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  locationButton: {
-    backgroundColor: '#075eec',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  locationButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  bottomButtonsContainer: {
+  topButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingBottom: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
-  bottomButton: {
+  topButton: {
     backgroundColor: '#075eec',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
     borderRadius: 10,
-    width: '45%',
   },
-  bottomButtonText: {
+  topButtonText: {
     color: '#fff',
     fontWeight: 'bold',
-    textAlign: 'center',
+  },
+  scrollViewContent: {
+    padding: 20,
+  },
+  villageBlock: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 20,
+  },
+  selectedvillage: {
+    borderWidth: 2,
+    borderColor: 'blue',
+  },
+  villageName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  villagePost: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  courierInfo: {
+    marginTop: 10,
+  },
+  releaseBtn: {
+    color: 'red',
+    marginTop: 5,
+  },
+  selectBtn: {
+    color: 'blue',
+    marginTop: 5,
   },
 });
