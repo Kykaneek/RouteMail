@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
 
-export const VillageAddAdresView = ({ navigation }: { navigation: any }) => {
+const VillageAddAdresView = ({ navigation, route}: { navigation: any, route: any}) => {
   const [houseNumber, setHouseNumber] = useState('');
-  const [coordinates, setCoordinates] = useState('');
+  const [villageId, setVillageId] = useState('');
+
+  useEffect(() => {
+    console.log(route.params);
+    if (route && route.params) {
+      const { villageId } = route.params;
+      setVillageId(villageId);
+    }
+  }, [route]);
 
   const handleConfirm = async () => {
     try {
-      const response = await fetch('http://192.168.1.55:8800/adresses', {
+      const response = await fetch('http://192.168.1.130:8800/adresses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           HouseNumber: houseNumber,
-          AdressCords: coordinates,
+          VillageId: villageId
         }),
       });
       if (response.ok) {
@@ -23,7 +31,7 @@ export const VillageAddAdresView = ({ navigation }: { navigation: any }) => {
         console.error('Dodanie adresu nie powiodło się');
       }
     } catch (error) {
-      console.error('Wystąpił błąd w trakie dodawania adresu:', error);
+      console.error('Wystąpił błąd w trakcie dodawania adresu:', error);
     }
   };
 
@@ -40,12 +48,6 @@ export const VillageAddAdresView = ({ navigation }: { navigation: any }) => {
           value={houseNumber}
           onChangeText={(text) => setHouseNumber(text)}
           placeholder="Numer domu"
-        />
-        <TextInput
-          style={styles.input}
-          value={coordinates}
-          onChangeText={(text) => setCoordinates(text)}
-          placeholder="Koordynaty"
         />
         <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
           <Text style={styles.buttonText}>Zatwierdź</Text>
@@ -95,3 +97,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
+export default VillageAddAdresView;

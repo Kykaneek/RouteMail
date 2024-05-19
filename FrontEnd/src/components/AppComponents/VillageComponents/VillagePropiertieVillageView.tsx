@@ -21,7 +21,7 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
 
   const fetchadresses = () => {
     // Pobranie danych adresów z backendu
-    fetch('http://192.168.1.11:8800/adresses')
+    fetch('http://192.168.1.130:8800/adresses')
       .then(response => response.json())
       .then(data => {
         setAdres(data);
@@ -58,6 +58,10 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
     navigation.navigate('VillagePropiertieAdresScreen', { AdresData: adresses });
   };
 
+  const AddAdress = () => {
+    navigation.navigate('VillageAddAdresScreen', {VillageData: VillageData });
+  };
+  
   const RemoveVillage = () => {
     Alert.alert(
       'Potwierdź',
@@ -66,7 +70,7 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
         {
           text: 'Tak',
           onPress: () => {
-            fetch(`http://192.168.1.11:8800/villages/${VillageData.id}`, {
+            fetch(`http://192.168.1.130:8800/villages/${VillageData.id}`, {
               method: 'DELETE'
             })
             .then(response => {
@@ -113,14 +117,17 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
         ))}
       </ScrollView>
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.button} onPress={GoBack} >
-            <Text style={styles.buttonText}>Powrót</Text>
+        <TouchableOpacity style={styles.button} onPress={AddAdress} >
+            <Text style={styles.buttonText}>Dodaj Adres</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={GoToEdition}>
             <Text style={styles.buttonText}>Edytuj</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={RemoveVillage}>
             <Text style={styles.buttonText}>Usuń</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={GoBack} >
+            <Text style={styles.buttonText}>Powrót</Text>
           </TouchableOpacity>
         </View>
       </View>

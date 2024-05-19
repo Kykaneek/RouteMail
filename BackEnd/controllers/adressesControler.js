@@ -30,11 +30,11 @@ export const getAdresses = (req, res) => {
 
 // Kontroler tworzenia adresów
 export const createAdresses = (req, res) => {
-    const q = "INSERT INTO adresses (`VillageId`, `HouseNumber`, `AdressCords`) VALUES (?)";
+    const q = "INSERT INTO adresses (`VillageId`, `HouseNumber`) VALUES (?)";
     const values = [
         req.body.VillageId,
-        req.body.HouseNumber,
-        JSON.stringify(req.body.AdressCords)
+        req.body.HouseNumber
+//        JSON.stringify(req.body.AdressCords)
     ];
     db.query(q, [values], (err, data) => {
         if (err) {

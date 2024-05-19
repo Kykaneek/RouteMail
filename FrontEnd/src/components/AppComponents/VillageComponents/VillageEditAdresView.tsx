@@ -25,7 +25,7 @@ export const VillageEditAdresView = ({ navigation, route}: { navigation: any, ro
   };
 
   const updateAdres = () => {
-    fetch(`http://192.168.1.11:8800/adresses/${AdresData.id}`, {
+    fetch(`http://192.168.1.130:8800/adresses/${AdresData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

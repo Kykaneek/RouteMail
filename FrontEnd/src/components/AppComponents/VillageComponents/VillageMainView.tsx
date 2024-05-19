@@ -10,30 +10,37 @@ import {
   Alert,
 } from 'react-native';
 
+import { fetchVillages } from '../../../services/AppServices/adressServices';
+
 export const VillageMainView = ({ navigation }: { navigation: any }) => {
   const [village, setVillage] = useState<any[]>([]);
 
   useEffect(() => {
-    fetchvillages();
+    fetchVillagesData();
   }, []);
 
   useFocusEffect(
     React.useCallback(() => {
-      fetchvillages();
+      fetchVillagesData();
     }, [])
   );
 
-  const fetchvillages = () => {
-    // Pobranie danych miejscowości z backendu
-    fetch('http://192.168.1.11:8800/villages')
-      .then(response => response.json())
-      .then(data => {
-        setVillage(data);
-      })
-      .catch(error => {
-        console.error('Error fetching village:', error);
-      });
+  const fetchVillagesData = async () => {
+    try
+    {
+      const vehicleData = await fetchVillages();
+      setVillage(vehicleData);
+    }
+    catch (error) 
+    {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error("Wystąpił nieznany błąd");
+      }
+    }
   };
+
 
   const GoBack = () => {
     navigation.navigate('UserViewScreen');

@@ -18,14 +18,8 @@ export const VillageEditVillageView = ({ navigation, route}: { navigation: any, 
     navigation.navigate('VillagePropiertieVillageScreen');
   };
 
-  const FetchVillageData = () => {
-    const { VillageData } = route.params;
-    setVillageData(VillageData);
-    
-  };
-
   const updateVehicle = () => {
-    fetch(`http://192.168.1.11:8800/villages/${VillageData.id}`, {
+    fetch(`http://192.168.1.130:8800/villages/${VillageData.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'

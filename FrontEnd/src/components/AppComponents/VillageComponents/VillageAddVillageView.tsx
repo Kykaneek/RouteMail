@@ -8,7 +8,7 @@ export const VillageAddVillageView = ({ navigation }: { navigation: any }) => {
   });
 
   const handleConfirm = () => {
-    fetch('http://192.168.1.11:8800/villages', {
+    fetch('http://192.168.1.130:8800/villages', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
