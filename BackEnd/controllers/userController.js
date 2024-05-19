@@ -14,6 +14,24 @@ export const getUsers = (req, res) => {
     });
 };
 
+//Kontroler zmiany hasła użytkownika | METODA PUT
+export const changeUserPassword = (req, res) => {
+    const userId = req.params.id;
+    const { newPassword } = req.body;
+
+    if (!newPassword) {
+        return res.status(400).json({ error: "Nowe haslo jest wymagane" });
+    }
+
+    const q = "UPDATE user SET `Password` = ? WHERE id = ?";
+    const values = [newPassword, userId];
+
+    db.query(q, values, (err, result) => {
+        if (err) return res.status(500).json(err);
+        return res.json({ message: "Haslo pomyslnie zakutalizowane" });
+    });
+};
+
 // Kontroler odczytu użytkownika po ID | METODA GET
 export const getUserById = (req, res) => {
     const userId = req.params.id; // Pobranie ID użytkownika z parametrów żądania
