@@ -69,7 +69,8 @@ export const deleteUser = (req, res) => {
 
 
 export const changePassword = (req, res) => {
-    const { id, newPassword } = req.body;
+    const id = req.params.id;
+    const { newPassword } = req.body;
   
     if (!id || !newPassword) {
       return res.status(400).send("Brak danych wymaganych do zmiany hasła");
