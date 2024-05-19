@@ -3,18 +3,18 @@ import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert} from 're
 import { useFocusEffect } from '@react-navigation/native';
 
 
-export const VillageAddAdresView = ({ navigation, route }: { navigation: any, route: any }) => {
-  const [houseNumber, setHouseNumber] = useState('');
-  const [villageId, setVillageId] = useState<string>('');
-
+export const VillagePropiertieAdresView = ({ navigation, route}: { navigation: any, route: any}) => {
+  const [AdresData, setAdres] = useState<any>({});
+  const [refreshing, setRefreshing] = useState(false);
   useEffect(() => {
-    console.log(route.params);
-    if (route && route.params) {
-      const { villageId } = route.params;
-      setVillageId(villageId);
-    }
-  }, [route]);
+    FetchAdresData();
+  }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      FetchAdresData();
+    }, [])
+  );
 /** 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

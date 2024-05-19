@@ -19,9 +19,10 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
     }, [])
   );
 
+  console.log(VillageData.id);
   const fetchadresses = () => {
     // Pobranie danych adresów z backendu
-    fetch('http://192.168.1.130:8800/adresses')
+    fetch(`http://192.168.1.130:8800/adresses?VillageId=3`)
       .then(response => response.json())
       .then(data => {
         setAdres(data);

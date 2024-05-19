@@ -14,6 +14,20 @@ export const fetchVillages = async () => {
       throw new Error('Błąd podczas pobierania danych o miejscowościach');
     }
   };
+  
+  export const fetchAdresses = async () => {
+    try {
+        const response =  await fetch(`${serviceConfig}/adresses?villageId=${villageId}`)
+    if (!response.ok) {
+        throw new Error('Nie można pobrać danych o miejscowości');
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Błąd podczas pobierania listy miejscowości:', error);
+      throw new Error('Błąd podczas pobierania danych o miejscowościach');
+    }
+  };
 
   //Service dodawania miejscowości
   export const createVillage = async (villageData: any) => {   

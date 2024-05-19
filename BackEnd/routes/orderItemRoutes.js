@@ -6,7 +6,7 @@ import { getAllOrderItems, getOrderItemById, createOrderItem, updateOrderItem, d
 
 
 router.get('/', getAllOrderItems); // Wydobycie wszystkich elementów zlecenia
-router.get('/id', getOrderItemById); // Wydobycie wszystkich elementów zlecenia dla danego ID
+router.post('/', getOrderItemById); // Wydobycie wszystkich elementów zlecenia dla danego ID
 router.post('/', createOrderItem); // Dodanie nowej pozycji zlecenia
 router.put('/:id', updateOrderItem); // Aktualizacja pozycji zlecenia
 router.delete('/:id', deleteOrderItem); // Usunięcie pozycji zlecenia

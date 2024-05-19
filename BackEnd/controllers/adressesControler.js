@@ -11,7 +11,8 @@ export const getAdresses = (req, res) => {
     // Przygotowanie zapytania SQL
 
     //kod do poprawy by adresy wyświetlały się dla konkretnych miejscowości
-    const q = "SELECT * FROM `adresses` WHERE VillageId = 1";
+    const q = "SELECT * FROM `adresses`";
+
     
     // Wykonanie zapytania do bazy danych
     db.query(q, (err, data) => {
@@ -26,6 +27,35 @@ export const getAdresses = (req, res) => {
         return res.json(parsedData); // Zwrócenie sparsowanych danych
     });
 };
+
+export const getAdressesByVillageId = (req, res) => {
+    const villageId = req.body.VillageId;
+
+    if (!villageId) {
+        return res.status(400).json({ error: "VillageId is required" });
+    }
+
+    console.log("Received data:", req.body);
+
+    const q = "SELECT * FROM `adresses` WHERE `VillageId` = ?";
+
+    console.log(villageId);
+
+    db.query(q, [villageId], (err, data) => {
+        if (err) return res.json(err);
+
+        const parsedData = data.map(row => {
+            const addressCords = row.AdressCords ? JSON.parse(row.AdressCords) : {};
+            return {
+                ...row,
+                AdressCords: addressCords // Ustawienie AdressCords na pusty obiekt, jeśli jest null
+            };
+        });
+
+        return res.json(parsedData); // Zwrócenie sparsowanych danych
+    });
+};
+
 
 
 // Kontroler tworzenia adresów
