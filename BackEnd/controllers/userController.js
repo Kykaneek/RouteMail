@@ -25,6 +25,17 @@ export const getUserById = (req, res) => {
     });
 };
 
+// Kontroler odczytu użytkownika po adresie e-mail | METODA GET
+export const getUserIdByEmail = (req, res) => {
+    const userEmail = req.params.email; // Pobranie adresu e-mail użytkownika z parametrów żądania
+    const q = "SELECT id FROM `user` WHERE email = ?"; // Zapytanie SQL pobierające ID użytkownika na podstawie adresu e-mail
+    db.query(q, userEmail, (err, data) => { // Wykonanie zapytania z przekazanym adresem e-mail
+        if (err) return res.status(500).json({ error: 'Błąd w pobieraniu ID użytkownika' }); // Obsługa błędu zapytania
+        if (data.length === 0) return res.status(404).json({ message: 'Użytkownik o podanym adresie e-mail nie został znaleziony' }); // Obsługa braku użytkownika o podanym adresie e-mail
+        return res.status(200).json(data[0]); // Zwrócenie ID znalezionego użytkownika
+    });
+};
+
 //Kontroler stworzenia użytkownika | METODA POST
 export const createUser = (req, res) => { //Wprowadż usera do bazy
     const q = "INSERT INTO user (`Name`, `SurName`, `CourierNumber`, `Role`, `Email`) VALUES (?)"
