@@ -1,135 +1,185 @@
 import React, { useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Alert,
-} from 'react-native';
+import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity, Alert } from 'react-native';
+import RNSmtpMailer from 'react-native-smtp-mailer';
+import { SMTP_USERNAME, SMTP_PASSWORD } from '@env';
 import { changePasswordService } from '../../../services/AppServices/usersServices';
 
-export const ChangePasswordComponent = ({ navigation, route }: { navigation: any, route: any }) => {
-  const [userData, setUserData] = useState<any>({});
-  const [form, setForm] = useState({
-    password: '',
-    confirmPassword: '',
-  });
+export const ChangePasswordComponent = ({ navigation, route }) => {
+  const [email, setEmail] = useState('');
+  const [recoveryCode, setRecoveryCode] = useState('');
+  const [enteredRecoveryCode, setEnteredRecoveryCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isCodeSent, setIsCodeSent] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [userData, setUserData] = useState({});
 
   useEffect(() => {
-    console.log(route.params);
-    if (route && route.params) {
+    if (route?.params) {
       const { userData } = route.params;
       setUserData(userData);
     }
   }, [route]);
-  
+
   const GoPrevious = () => {
     navigation.navigate('UserPropertiesScreen');
   };
 
-  const changePassword = async () => {
-    if (form.password !== form.confirmPassword) {
-      Alert.alert("Błąd", "Nowe hasło i potwierdzenie hasła nie zgadzają się.");
+  const sendRecoveryEmail = (email, recoveryCode) => {
+    RNSmtpMailer.sendMail({
+      mailhost: 'smtp.gmail.com',
+      port: '465',
+      ssl: true,
+      username: SMTP_USERNAME,
+      password: SMTP_PASSWORD,
+      from: SMTP_USERNAME,
+      recipients: email,
+      subject: 'Twój kod odzysku',
+      htmlBody: `<p>Twój kod odzysku to: <b>${recoveryCode}</b></p>`,
+      attachmentPaths: [],
+      attachmentNames: [],
+      attachmentTypes: [],
+    })
+      .then(success => {
+        console.log('E-mail został wysłany pomyślnie:', success);
+        Alert.alert('Kod odzysku został wysłany na Twój adres e-mail.');
+        setIsCodeSent(true);
+      })
+      .catch(err => {
+        console.log('Błąd podczas wysyłania e-maila:', err);
+        Alert.alert('Wystąpił błąd podczas wysyłania e-maila.');
+      });
+  };
+
+  const generateRecoveryCode = () => {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  };
+
+  const fetchUserIdByEmail = async (email) => {
+    try {
+      const response = await fetch(`http://192.168.1.55:8800/users/email/${email}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error('Odpowiedź sieci nie była ok ' + response.statusText);
+      }
+
+      const data = await response.json();
+      setUserId(data.id);
+      return data.id; // zwróć userId, jeśli wszystko poszło dobrze
+    } catch (error) {
+      console.error('Wystąpił problem z operacją fetch:', error);
+      Alert.alert('Wystąpił błąd podczas pobierania danych użytkownika.');
+      return null; // zwróć null, jeśli wystąpił błąd
+    }
+  };
+
+  const handleSendCode = async () => {
+    const userId = await fetchUserIdByEmail(email);
+    if (userId) { // tylko jeśli userId nie jest null
+      const recoveryCode = generateRecoveryCode();
+      setRecoveryCode(recoveryCode);
+      sendRecoveryEmail(email, recoveryCode);
+    }
+  };
+
+  const verifyRecoveryCode = () => {
+    if (enteredRecoveryCode === recoveryCode) {
+      Alert.alert('Kod odzysku poprawny. Możesz teraz ustawić nowe hasło.');
+    } else {
+      Alert.alert('Podany kod odzysku jest nieprawidłowy.');
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Hasła nie są zgodne.');
       return;
     }
 
     try {
-      const responseData = await changePasswordService(userData.id, form.password);
-      console.log(responseData);
-      Alert.alert("Sukces", "Hasło zostało pomyślnie zmienione.");
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Błąd", "Wystąpił błąd podczas zmiany hasła.");
-    }
-  
+      const response = await fetch(`http://192.168.1.55:8800/users/changepassword/${userId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          newPassword: newPassword,
+        }),
+      });
 
-
-    // Przygotuj dane do wysłania na serwer
-    const data = {
-      id: userData.id,
-      newPassword: form.password,
-    };
-
-    // Wyślij żądanie do serwera
-    fetch(`http://192.168.1.130:8800/users/changepassword/${userData.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Błąd podczas zmiany hasła');
+      if (response.ok) {
+        Alert.alert('Twoje hasło zostało pomyślnie zmienione.');
+        // Clear form fields
+        setEmail('');
+        setEnteredRecoveryCode('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setIsCodeSent(false);
+      } else {
+        const errorData = await response.json();
+        console.error('Błąd podczas zmiany hasła:', errorData);
+        Alert.alert('Wystąpił błąd podczas zmiany hasła.');
       }
-      return console.log(response.json());
-    })
-    .then(responseData => {
-      console.log(responseData);
-      Alert.alert("Sukces", "Hasło zostało pomyślnie zmienione.");
-      // Możesz również dodać nawigację z powrotem do poprzedniego ekranu
-    })
-    .catch(error => {
-      console.error(error);
-      Alert.alert("Błąd", "Wystąpił błąd podczas zmiany hasła.");
-    });
-  };
-
-  const handlePasswordChange = (value: string) => {
-    setForm({ ...form, password: value });
-  };
-
-  const handleConfirmPasswordChange = (value: string) => {
-    setForm({ ...form, confirmPassword: value });
+    } catch (error) {
+      console.error('Wystąpił błąd podczas zmiany hasła:', error);
+      Alert.alert('Wystąpił błąd podczas zmiany hasła.');
+    }
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.captionContainer}>
-        <Text style={styles.caption}>Zmiana hasła</Text>
-      </View>
-      <View style={styles.input}>
-        <Text style={styles.inputLabel}>Nowe hasło</Text>
-        <TextInput
-          autoCorrect={false}
-          onChangeText={handlePasswordChange}
-          placeholder="********"
-          placeholderTextColor="#6b7280"
-          style={styles.inputControl}
-          secureTextEntry={true}
-          value={form.password}
-        />
-      </View>
-      <View style={styles.input}>
-        <Text style={styles.inputLabel}>Powtórz hasło</Text>
-        <TextInput
-          autoCorrect={false}
-          onChangeText={handleConfirmPasswordChange}
-          placeholder="********"
-          placeholderTextColor="#6b7280"
-          style={styles.inputControl}
-          secureTextEntry={true}
-          value={form.confirmPassword}
-        />
-      </View>
-      <View style={styles.buttonsWrapper}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={changePassword}>
-          <Text style={styles.buttonText}>Zmień hasło</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          >
-          <Text style={styles.buttonText}>Wyślij kod odzysku</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={GoPrevious}>
-          <Text style={styles.buttonText}>Rezygnacja</Text>
-        </TouchableOpacity>
+      <View style={styles.formContainer}>
+        <Text style={styles.title}>Odzyskiwanie Hasła</Text>
+        {!isCodeSent ? (
+          <>
+            <TextInput
+              style={styles.input}
+              value={email}
+              onChangeText={setEmail}
+              placeholder="Adres e-mail"
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <TouchableOpacity style={styles.button} onPress={handleSendCode}>
+              <Text style={styles.buttonText}>Wyślij Kod Odzysku</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={GoPrevious}>
+              <Text style={styles.buttonText}>Rezygnacja</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TextInput
+              style={styles.input}
+              value={enteredRecoveryCode}
+              onChangeText={setEnteredRecoveryCode}
+              placeholder="Kod Odzysku"
+              keyboardType="numeric"
+            />
+            <TouchableOpacity style={styles.button} onPress={verifyRecoveryCode}>
+              <Text style={styles.buttonText}>Potwierdź Kod Odzysku</Text>
+            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholder="Nowe Hasło"
+              secureTextEntry
+            />
+            <TextInput
+              style={styles.input}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholder="Potwierdź Nowe Hasło"
+              secureTextEntry
+            />
+            <TouchableOpacity style={styles.button} onPress={handleChangePassword}>
+              <Text style={styles.buttonText}>Zmień Hasło</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -138,51 +188,36 @@ export const ChangePasswordComponent = ({ navigation, route }: { navigation: any
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#e8ecf4',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
   },
-  captionContainer: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+  formContainer: {
+    width: '80%',
   },
-  caption: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  inputLabel: {
-    marginBottom: 5,
-    color: '#333',
-  },
-  inputControl: {
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 12,
-    minWidth: 300,
-  },
-  buttonsWrapper: {
-    paddingHorizontal: 20,
-    marginTop: 20,
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
   },
   button: {
     backgroundColor: '#075eec',
-    paddingVertical: 15,
-    borderRadius: 10,
-    minWidth: 300,
-    marginBottom: 5
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginBottom: 10,
   },
   buttonText: {
-    marginBottom: 5,
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
-    textAlign: 'center',
   },
 });
 
