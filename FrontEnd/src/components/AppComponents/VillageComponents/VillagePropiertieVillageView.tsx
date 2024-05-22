@@ -1,28 +1,37 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView,} from 'react-native';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { StyleSheet, SafeAreaView, View, Text, TouchableOpacity, Alert, ScrollView } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
 
 export const VillagePropiertieVillageView = ({ navigation, route}: { navigation: any, route: any}) => {
   const [VillageData, setVillage] = useState<any>({});
   const [adresses, setAdres] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const isMounted = useRef(false);
+
   useEffect(() => {
+    isMounted.current = true;
     FetchVillageData();
-    fetchadresses();
+    return () => {
+      isMounted.current = false;
+    };
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      FetchVillageData();
-      fetchadresses();
+      if (isMounted.current) {
+        FetchVillageData();
+      }
     }, [])
   );
 
-  console.log(VillageData.id);
+  useEffect(() => {
+    if (isMounted.current) {
+      fetchadresses();
+    }
+  }, [VillageData]);
+
   const fetchadresses = () => {
-    // Pobranie danych adresów z backendu
-    fetch(`http://192.168.1.130:8800/adresses?VillageId=3`)
+    fetch(`http://192.168.1.11:8800/adresses/${VillageData.id}`)
       .then(response => response.json())
       .then(data => {
         setAdres(data);
@@ -41,15 +50,14 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
     }, 1000);
   }, []);
 */
-  const FetchVillageData = () => {
-    const { VillageData } = route.params;
-    setVillage(VillageData);
-  };
-  
+const FetchVillageData = () => {
+  const { VillageData } = route.params;
+  setVillage(VillageData);
+};
 
-  const GoBack = () => {
-    navigation.navigate('VillageMainScreen');
-  };
+const GoBack = () => {
+  navigation.navigate('VillageMainScreen');
+};
 
   const GoToEdition = () => {
     navigation.navigate('VillageEditVillageScreen', { VillageData: VillageData });
@@ -71,7 +79,7 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
         {
           text: 'Tak',
           onPress: () => {
-            fetch(`http://192.168.1.130:8800/villages/${VillageData.id}`, {
+            fetch(`http://192.168.1.11:8800/villages/${VillageData.id}`, {
               method: 'DELETE'
             })
             .then(response => {
@@ -105,18 +113,18 @@ export const VillagePropiertieVillageView = ({ navigation, route}: { navigation:
       <View style={styles.container}>
         <Text style={styles.title}>{VillageData.Village_Name}</Text>
         <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {adresses.map((adresses, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => ViewProperties(adresses)}
-            style={[styles.AdresBlock]}
-           >
-            <View>
-              <Text style={styles.adressnumber}>{adresses.HouseNumber}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+    {adresses.map((adresses, index) => (
+      <TouchableOpacity
+        key={index}
+        onPress={() => ViewProperties(adresses)}
+        style={[styles.AdresBlock]}
+       >
+        <View>
+          <Text style={styles.adressnumber}>{adresses.HouseNumber}</Text>
+        </View>
+      </TouchableOpacity>
+    ))}
+</ScrollView>
         <View style={styles.buttonRow}>
         <TouchableOpacity style={styles.button} onPress={AddAdress} >
             <Text style={styles.buttonText}>Dodaj Adres</Text>

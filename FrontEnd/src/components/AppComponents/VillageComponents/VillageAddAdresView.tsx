@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, SafeAreaView, View, Text, TextInput, TouchableOpacity } from 'react-native';
 
-const VillageAddAdresView = ({ navigation, route}: { navigation: any, route: any}) => {
+export const VillageAddAdresView = ({ navigation, route}: { navigation: any, route: any}) => {
   const [houseNumber, setHouseNumber] = useState('');
   const [villageId, setVillageId] = useState('');
 

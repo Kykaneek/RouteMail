@@ -8,8 +8,7 @@ import { getAdresses,  getAdressesByVillageId, createAdresses, updateAdresses, d
 const router = express.Router();
 
 router.get("/", getAdresses);
-router.get("/:id", getAdresses);
-router.get("/", getAdressesByVillageId);
+router.get("/:id", getAdressesByVillageId);
 router.post("/",  createAdresses);
 router.put("/:id", updateAdresses);
 router.delete("/:id", deleteAdresses);
