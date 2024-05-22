@@ -32,7 +32,7 @@ export const getAdressesByVillageId = (req, res) => {
         return res.status(400).json({ error: "VillageId is required" });
     }
 
-    console.log("Received data:", req.params);
+    console.log("Received data:", villageId);
 
     const q = "SELECT * FROM `adresses` WHERE `VillageId` = ?";
 
