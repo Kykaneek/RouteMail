@@ -29,13 +29,13 @@ export const getAdresses = (req, res) => {
 };
 
 export const getAdressesByVillageId = (req, res) => {
-    const villageId = req.body.VillageId;
+    const villageId = req.params.villageId;
 
     if (!villageId) {
         return res.status(400).json({ error: "VillageId is required" });
     }
 
-    console.log("Received data:", req.body);
+    console.log("Received data:", villageId);
 
     const q = "SELECT * FROM `adresses` WHERE `VillageId` = ?";
 
