@@ -29,7 +29,7 @@ export const getAdresses = (req, res) => {
 };
 
 export const getAdressesByVillageId = (req, res) => {
-    const villageId = req.params.villageId;
+    const villageId = req.params.id;
 
     if (!villageId) {
         return res.status(400).json({ error: "VillageId is required" });
