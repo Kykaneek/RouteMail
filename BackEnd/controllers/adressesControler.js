@@ -60,18 +60,26 @@ export const getAdressesByVillageId = (req, res) => {
 
 // Kontroler tworzenia adresów
 export const createAdresses = (req, res) => {
-    const q = "INSERT INTO adresses (`VillageId`, `HouseNumber`) VALUES (?)";
-    const values = [
-        req.body.VillageId,
-        req.body.HouseNumber
-//        JSON.stringify(req.body.AdressCords)
-    ];
-    db.query(q, [values], (err, data) => {
+    const { HouseNumber, VillageId, AdressCords } = req.body;
+
+    // Sprawdzenie, czy wszystkie wymagane pola zostały przekazane
+    if (!HouseNumber || !VillageId || !AdressCords) {
+        return res.status(400).json({ error: 'Brak wymaganych pól w danych wejściowych' });
+    }
+
+    // Przygotowanie zapytania SQL do wstawienia nowego rekordu
+    const q = "INSERT INTO `adresses` (HouseNumber, VillageId, AdressCords) VALUES (?, ?, ?)";
+
+    // Konwersja AdressCords na format JSON
+    const adressCordsJson = JSON.stringify(AdressCords);
+
+    // Wykonanie zapytania do bazy danych
+    db.query(q, [HouseNumber, VillageId, adressCordsJson], (err, data) => {
         if (err) {
             console.error(err);
-            return res.status(500).json(err);
+            return res.status(500).json({ error: 'Wystąpił błąd podczas dodawania nowego adresu' });
         }
-        return res.status(200).json(data);
+        return res.status(201).json({ message: 'Adres został dodany pomyślnie' });
     });
 };
 
