@@ -15,7 +15,7 @@ export const fetchVillages = async () => {
     }
   };
   
-  export const fetchAdresses = async () => {
+  export const fetchAdresses = async (villageId: string) => {
     try {
         const response =  await fetch(`${serviceConfig}/adresses?villageId=${villageId}`)
     if (!response.ok) {

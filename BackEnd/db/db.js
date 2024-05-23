@@ -7,8 +7,8 @@ import mysql from 'mysql';
 const db = mysql.createPool({
     host:"localhost",
     user:"root",
-    password:"Krystian123!",
-    database:"routemail"
+    password:"12345",
+    database:"routmail"
 })
 
 

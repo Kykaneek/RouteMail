@@ -6,25 +6,22 @@ import db from '../db/db.js';
 
 //Kontrole odczytu adresów
 export const getAdresses = (req, res) => {
-
-    console.log("Received data:", req.body);
-    // Przygotowanie zapytania SQL
-
-    //kod do poprawy by adresy wyświetlały się dla konkretnych miejscowości
     const q = "SELECT * FROM `adresses`";
-
-    
-    // Wykonanie zapytania do bazy danych
+ 
     db.query(q, (err, data) => {
-        if (err) return res.json(err); 
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'Wystąpił błąd podczas pobierania danych adresów' });
+        }
+ 
         const parsedData = data.map(row => {
-            const addressCords = row.AdressCords ? JSON.parse(row.AdressCords) : {}; 
+            const addressCords = row.AdressCords ? JSON.parse(row.AdressCords) : {};
             return {
                 ...row,
-                AdressCords: addressCords // Ustawienie AdressCords na pusty obiekt, jeśli jest null
+                AdressCords: addressCords
             };
         });
-        return res.json(parsedData); // Zwrócenie sparsowanych danych
+        return res.json(parsedData);
     });
 };
 
